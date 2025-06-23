@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Upload, Download, Loader2, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,29 +6,31 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { generatePDF } from '@/utils/pdfGenerator';
 import { toast } from '@/hooks/use-toast';
+import ImageEditor from '@/components/ImageEditor';
 
 const Index = () => {
-  const [currentStep, setCurrentStep] = useState<'upload' | 'adjust' | 'quantity' | 'final'>('upload');
+  const [currentStep, setCurrentStep] = useState<'upload' | 'editor' | 'photoroom' | 'quantity' | 'final'>('upload');
   const [originalImage, setOriginalImage] = useState<File | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
+  const [adjustedImage, setAdjustedImage] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(4);
   const [isProcessing, setIsProcessing] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const photoRoomUploadRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (file: File) => {
     console.log('File selected:', file.name);
     setOriginalImage(file);
     
-    // Create URL for the uploaded image
     const imageUrl = URL.createObjectURL(file);
     setProcessedImage(imageUrl);
-    setCurrentStep('adjust');
+    setCurrentStep('editor');
     
     toast({
       title: "Imagem carregada!",
-      description: "Agora você pode usar o PhotoRoom para remover o fundo."
+      description: "Agora ajuste a posição da imagem na proporção 3x4."
     });
   };
 
@@ -37,11 +38,20 @@ const Index = () => {
     fileInputRef.current?.click();
   };
 
+  const handleImageAdjusted = (adjustedImageUrl: string) => {
+    setAdjustedImage(adjustedImageUrl);
+    setCurrentStep('photoroom');
+    
+    toast({
+      title: "Imagem ajustada!",
+      description: "Baixe a imagem, use o PhotoRoom para remover o fundo e depois faça upload aqui."
+    });
+  };
+
   const openPhotoRoom = () => {
     console.log('Opening PhotoRoom...');
     const photoRoomUrl = 'https://www.photoroom.com/pt-br/ferramentas/remover-fundo-de-imagem';
     
-    // Open PhotoRoom in a popup
     const popup = window.open(
       photoRoomUrl,
       'photoroom',
@@ -51,67 +61,32 @@ const Index = () => {
     if (popup) {
       toast({
         title: "PhotoRoom aberto!",
-        description: "Use o PhotoRoom para remover o fundo, baixe a imagem e faça upload novamente aqui."
+        description: "Use o PhotoRoom para remover o fundo da imagem baixada."
       });
     } else {
-      // Fallback if popup is blocked
       window.open(photoRoomUrl, '_blank');
       toast({
         title: "PhotoRoom aberto em nova aba!",
-        description: "Use o PhotoRoom para remover o fundo, baixe a imagem e faça upload novamente aqui."
+        description: "Use o PhotoRoom para remover o fundo da imagem baixada."
       });
     }
   };
 
-  const processImageManually = () => {
-    if (!processedImage) return;
+  const handlePhotoRoomUpload = () => {
+    photoRoomUploadRef.current?.click();
+  };
+
+  const handlePhotoRoomFileSelect = (file: File) => {
+    console.log('PhotoRoom processed file selected:', file.name);
     
-    // Create a canvas to process the image in 3x4 proportion
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const imageUrl = URL.createObjectURL(file);
+    setProcessedImage(imageUrl);
+    setCurrentStep('quantity');
     
-    const img = new Image();
-    img.onload = () => {
-      // Set canvas size for 3x4 cm at 300 DPI
-      canvas.width = 354; // 3cm at 300 DPI
-      canvas.height = 472; // 4cm at 300 DPI
-      
-      // Fill with white background
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Calculate scaling to fit image while maintaining aspect ratio
-      const scale = Math.min(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
-      const scaledWidth = img.naturalWidth * scale;
-      const scaledHeight = img.naturalHeight * scale;
-      
-      // Center the image
-      const x = (canvas.width - scaledWidth) / 2;
-      const y = (canvas.height - scaledHeight) / 2;
-      
-      ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
-      
-      // Add thin black border
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
-      
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const processedUrl = URL.createObjectURL(blob);
-          setProcessedImage(processedUrl);
-          setCurrentStep('quantity');
-          
-          toast({
-            title: "Imagem ajustada!",
-            description: "Foto ajustada para proporção 3x4 com fundo branco."
-          });
-        }
-      }, 'image/png', 1.0);
-    };
-    
-    img.src = processedImage;
+    toast({
+      title: "Imagem sem fundo carregada!",
+      description: "Agora escolha quantas cópias deseja gerar."
+    });
   };
 
   const generateDocument = async () => {
@@ -164,11 +139,15 @@ const Index = () => {
     setCurrentStep('upload');
     setOriginalImage(null);
     setProcessedImage(null);
+    setAdjustedImage(null);
     setPdfBlob(null);
     setQuantity(4);
     
     if (processedImage) {
       URL.revokeObjectURL(processedImage);
+    }
+    if (adjustedImage) {
+      URL.revokeObjectURL(adjustedImage);
     }
   };
 
@@ -186,7 +165,7 @@ const Index = () => {
             📸 Foto 3x4 Sem Fundo
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            PDF Pronto para Imprimir - Faça upload da sua foto, use o PhotoRoom para remover o fundo e gere múltiplas cópias
+            PDF Pronto para Imprimir - Faça upload da sua foto, ajuste manualmente, use o PhotoRoom para remover o fundo e gere múltiplas cópias
           </p>
         </div>
 
@@ -226,23 +205,21 @@ const Index = () => {
             </Card>
           )}
 
-          {currentStep === 'adjust' && processedImage && (
+          {currentStep === 'editor' && processedImage && (
+            <ImageEditor
+              imageUrl={processedImage}
+              onDownload={handleImageAdjusted}
+            />
+          )}
+
+          {currentStep === 'photoroom' && adjustedImage && (
             <Card className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-0">
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                  Remova o Fundo da Imagem
+                  Remover Fundo no PhotoRoom
                 </h2>
-                <div className="flex justify-center mb-6">
-                  <div className="bg-white rounded-2xl p-4 shadow-lg">
-                    <img
-                      src={processedImage}
-                      alt="Original"
-                      className="max-w-64 max-h-80 object-contain rounded-xl"
-                    />
-                  </div>
-                </div>
                 <p className="text-gray-600 mb-6">
-                  Use o PhotoRoom para remover o fundo da sua foto. Depois baixe a imagem processada e faça upload novamente.
+                  Sua imagem 3x4 já foi baixada. Agora use o PhotoRoom para remover o fundo e depois faça upload da imagem processada.
                 </p>
               </div>
 
@@ -256,22 +233,25 @@ const Index = () => {
                 </Button>
                 
                 <Button
-                  onClick={handleUploadClick}
+                  onClick={handlePhotoRoomUpload}
                   variant="outline"
                   className="border-2 border-blue-300 hover:border-blue-500 px-8 py-3 rounded-xl text-lg font-medium transition-all duration-300 hover:scale-105"
                 >
                   <Upload className="h-5 w-5 mr-2" />
-                  Fazer Upload da Foto Processada
-                </Button>
-                
-                <Button
-                  onClick={processImageManually}
-                  variant="ghost"
-                  className="text-gray-500 hover:text-gray-700 rounded-xl"
-                >
-                  Continuar sem remover fundo
+                  Upload da Imagem Sem Fundo
                 </Button>
               </div>
+
+              <input
+                ref={photoRoomUploadRef}
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handlePhotoRoomFileSelect(file);
+                }}
+                className="hidden"
+              />
             </Card>
           )}
 
@@ -279,19 +259,19 @@ const Index = () => {
             <Card className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-0">
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                  Imagem Ajustada (3x4)
+                  Imagem Final (3x4 sem fundo)
                 </h2>
                 <div className="flex justify-center mb-6">
                   <div className="bg-white rounded-2xl p-4 shadow-lg">
                     <img
                       src={processedImage}
                       alt="Processed"
-                      className="w-32 h-42 object-cover rounded-xl border-2 border-black"
+                      className="w-32 h-42 object-cover rounded-xl"
                     />
                   </div>
                 </div>
                 <p className="text-sm text-gray-500 mb-4">
-                  Foto ajustada na proporção 3x4 com contorno preto para recorte
+                  Foto 3x4 sem fundo, pronta para gerar o PDF
                 </p>
               </div>
 
