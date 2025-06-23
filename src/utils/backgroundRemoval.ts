@@ -44,14 +44,24 @@ async function detectFace(canvas: HTMLCanvasElement) {
     const result = await faceDetector(imageData);
     
     // Find the largest face/person detection
-    const faceDetection = result.find((detection: any) => 
-      detection.label.toLowerCase().includes('person') || 
-      detection.label.toLowerCase().includes('face')
+    const detections = Array.isArray(result) ? result : [result];
+    const faceDetection = detections.find((detection: any) => 
+      detection.label && (
+        detection.label.toLowerCase().includes('person') || 
+        detection.label.toLowerCase().includes('face')
+      )
     );
     
-    if (faceDetection) {
+    if (faceDetection && faceDetection.bbox) {
       console.log('Face detected:', faceDetection);
-      return faceDetection.box;
+      // Convert bbox array [x, y, width, height] to box object
+      const [x, y, width, height] = faceDetection.bbox;
+      return {
+        xmin: x,
+        ymin: y,
+        xmax: x + width,
+        ymax: y + height
+      };
     }
     
     return null;
