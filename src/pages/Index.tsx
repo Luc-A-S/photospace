@@ -1,15 +1,15 @@
+
 import React, { useState, useRef } from 'react';
-import { Camera, Upload, Download, Printer, Loader2 } from 'lucide-react';
+import { Upload, Download, Loader2, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { removeBackground, loadImage } from '@/utils/backgroundRemoval';
 import { generatePDF } from '@/utils/pdfGenerator';
 import { toast } from '@/hooks/use-toast';
 
 const Index = () => {
-  const [currentStep, setCurrentStep] = useState<'upload' | 'processing' | 'quantity' | 'final'>('upload');
+  const [currentStep, setCurrentStep] = useState<'upload' | 'adjust' | 'quantity' | 'final'>('upload');
   const [originalImage, setOriginalImage] = useState<File | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(4);
@@ -17,126 +17,101 @@ const Index = () => {
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [showCamera, setShowCamera] = useState(false);
-  const [stream, setStream] = useState<MediaStream | null>(null);
 
   const handleFileSelect = (file: File) => {
     console.log('File selected:', file.name);
     setOriginalImage(file);
-    processImage(file);
+    
+    // Create URL for the uploaded image
+    const imageUrl = URL.createObjectURL(file);
+    setProcessedImage(imageUrl);
+    setCurrentStep('adjust');
+    
+    toast({
+      title: "Imagem carregada!",
+      description: "Agora você pode usar o PhotoRoom para remover o fundo."
+    });
   };
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
 
-  const startCamera = async () => {
-    try {
-      console.log('Requesting camera access...');
-      const constraints = {
-        video: { 
-          facingMode: 'user',
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        }
-      };
-      
-      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-      console.log('Camera access granted');
-      
-      setStream(mediaStream);
-      setShowCamera(true);
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-        videoRef.current.onloadedmetadata = () => {
-          console.log('Video metadata loaded');
-          videoRef.current?.play();
-        };
-      }
-    } catch (error) {
-      console.error('Camera access error:', error);
-      toast({
-        title: "Erro ao acessar câmera",
-        description: "Não foi possível acessar a câmera. Verifique as permissões do navegador.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const capturePhoto = () => {
-    console.log('Capturing photo...');
-    if (videoRef.current && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const video = videoRef.current;
-      
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        // Flip image horizontally for selfie effect
-        ctx.scale(-1, 1);
-        ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-        ctx.scale(-1, 1); // Reset transform
-        
-        canvas.toBlob((blob) => {
-          if (blob) {
-            console.log('Photo captured successfully');
-            const file = new File([blob], 'camera-photo.jpg', { type: 'image/jpeg' });
-            handleFileSelect(file);
-            stopCamera();
-          }
-        }, 'image/jpeg', 0.9);
-      }
-    }
-  };
-
-  const stopCamera = () => {
-    console.log('Stopping camera...');
-    if (stream) {
-      stream.getTracks().forEach(track => {
-        track.stop();
-        console.log('Camera track stopped:', track.kind);
-      });
-      setStream(null);
-    }
-    setShowCamera(false);
-  };
-
-  const processImage = async (file: File) => {
-    setIsProcessing(true);
-    setCurrentStep('processing');
+  const openPhotoRoom = () => {
+    console.log('Opening PhotoRoom...');
+    const photoRoomUrl = 'https://www.photoroom.com/pt-br/ferramentas/remover-fundo-de-imagem';
     
-    try {
-      console.log('Starting image processing...');
-      const imageElement = await loadImage(file);
-      console.log('Image loaded successfully');
-      
-      const processedBlob = await removeBackground(imageElement);
-      console.log('Background removed successfully');
-      
-      const processedUrl = URL.createObjectURL(processedBlob);
-      setProcessedImage(processedUrl);
-      setCurrentStep('quantity');
-      
+    // Open PhotoRoom in a popup
+    const popup = window.open(
+      photoRoomUrl,
+      'photoroom',
+      'width=1200,height=800,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no'
+    );
+    
+    if (popup) {
       toast({
-        title: "Imagem processada!",
-        description: "Fundo removido e rosto centralizado com sucesso."
+        title: "PhotoRoom aberto!",
+        description: "Use o PhotoRoom para remover o fundo, baixe a imagem e faça upload novamente aqui."
       });
-    } catch (error) {
-      console.error('Error processing image:', error);
+    } else {
+      // Fallback if popup is blocked
+      window.open(photoRoomUrl, '_blank');
       toast({
-        title: "Erro ao processar imagem",
-        description: "Não foi possível processar a imagem. Tente novamente com uma foto mais clara.",
-        variant: "destructive"
+        title: "PhotoRoom aberto em nova aba!",
+        description: "Use o PhotoRoom para remover o fundo, baixe a imagem e faça upload novamente aqui."
       });
-      setCurrentStep('upload');
-    } finally {
-      setIsProcessing(false);
     }
+  };
+
+  const processImageManually = () => {
+    if (!processedImage) return;
+    
+    // Create a canvas to process the image in 3x4 proportion
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    const img = new Image();
+    img.onload = () => {
+      // Set canvas size for 3x4 cm at 300 DPI
+      canvas.width = 354; // 3cm at 300 DPI
+      canvas.height = 472; // 4cm at 300 DPI
+      
+      // Fill with white background
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Calculate scaling to fit image while maintaining aspect ratio
+      const scale = Math.min(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+      const scaledWidth = img.naturalWidth * scale;
+      const scaledHeight = img.naturalHeight * scale;
+      
+      // Center the image
+      const x = (canvas.width - scaledWidth) / 2;
+      const y = (canvas.height - scaledHeight) / 2;
+      
+      ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+      
+      // Add thin black border
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+      
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const processedUrl = URL.createObjectURL(blob);
+          setProcessedImage(processedUrl);
+          setCurrentStep('quantity');
+          
+          toast({
+            title: "Imagem ajustada!",
+            description: "Foto ajustada para proporção 3x4 com fundo branco."
+          });
+        }
+      }, 'image/png', 1.0);
+    };
+    
+    img.src = processedImage;
   };
 
   const generateDocument = async () => {
@@ -184,49 +159,6 @@ const Index = () => {
     }
   };
 
-  const printPDF = () => {
-    if (pdfBlob) {
-      console.log('Opening print dialog...');
-      const url = URL.createObjectURL(pdfBlob);
-      
-      // Create a hidden iframe for printing
-      const iframe = document.createElement('iframe');
-      iframe.style.position = 'fixed';
-      iframe.style.right = '0';
-      iframe.style.bottom = '0';
-      iframe.style.width = '0';
-      iframe.style.height = '0';
-      iframe.style.border = 'none';
-      
-      document.body.appendChild(iframe);
-      
-      iframe.onload = () => {
-        console.log('PDF loaded in iframe, opening print dialog...');
-        try {
-          iframe.contentWindow?.focus();
-          iframe.contentWindow?.print();
-          
-          toast({
-            title: "Janela de impressão aberta!",
-            description: "Configure sua impressora para melhor qualidade."
-          });
-        } catch (error) {
-          console.error('Print error:', error);
-          // Fallback: open in new window
-          window.open(url, '_blank');
-        }
-        
-        // Clean up after a delay
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-          URL.revokeObjectURL(url);
-        }, 1000);
-      };
-      
-      iframe.src = url;
-    }
-  };
-
   const resetApp = () => {
     console.log('Resetting app...');
     setCurrentStep('upload');
@@ -238,10 +170,6 @@ const Index = () => {
     if (processedImage) {
       URL.revokeObjectURL(processedImage);
     }
-    
-    if (stream) {
-      stopCamera();
-    }
   };
 
   return (
@@ -251,54 +179,16 @@ const Index = () => {
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
             <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-3 shadow-lg">
-              <Camera className="h-8 w-8 text-white" />
+              <Upload className="h-8 w-8 text-white" />
             </div>
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
             📸 Foto 3x4 Sem Fundo
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            PDF Pronto para Imprimir - Remova o fundo, centralize o rosto e gere múltiplas cópias com contorno para recorte
+            PDF Pronto para Imprimir - Faça upload da sua foto, use o PhotoRoom para remover o fundo e gere múltiplas cópias
           </p>
         </div>
-
-        {/* Camera Modal */}
-        {showCamera && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <Card className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl">
-              <div className="text-center mb-4">
-                <h3 className="text-xl font-semibold mb-2">Tirar Foto</h3>
-                <div className="relative rounded-2xl overflow-hidden bg-gray-100">
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="w-full h-64 object-cover transform scale-x-[-1]"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <Button
-                  onClick={capturePhoto}
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl py-3"
-                >
-                  <Camera className="h-4 w-4 mr-2" />
-                  Capturar
-                </Button>
-                <Button
-                  onClick={stopCamera}
-                  variant="outline"
-                  className="flex-1 rounded-xl py-3"
-                >
-                  Cancelar
-                </Button>
-              </div>
-            </Card>
-          </div>
-        )}
-
-        <canvas ref={canvasRef} className="hidden" />
 
         {/* Main Content */}
         <div className="max-w-4xl mx-auto">
@@ -306,29 +196,20 @@ const Index = () => {
             <Card className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-0">
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                  Escolha sua Imagem
+                  Faça Upload da sua Imagem
                 </h2>
                 <p className="text-gray-600">
-                  Tire uma foto ou faça upload de uma imagem existente
+                  Escolha uma foto para começar o processo
                 </p>
               </div>
               
-              <div className="grid md:grid-cols-2 gap-6">
-                <Button
-                  onClick={startCamera}
-                  className="h-32 bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-2xl flex flex-col items-center justify-center gap-3 shadow-lg transition-all duration-300 hover:scale-105"
-                >
-                  <Camera className="h-8 w-8" />
-                  <span className="text-lg font-medium">Tirar Foto Agora</span>
-                </Button>
-                
+              <div className="flex justify-center">
                 <Button
                   onClick={handleUploadClick}
-                  variant="outline"
-                  className="h-32 border-2 border-dashed border-blue-300 hover:border-blue-500 rounded-2xl flex flex-col items-center justify-center gap-3 transition-all duration-300 hover:scale-105 hover:bg-blue-50"
+                  className="h-32 w-64 bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-2xl flex flex-col items-center justify-center gap-3 shadow-lg transition-all duration-300 hover:scale-105"
                 >
-                  <Upload className="h-8 w-8 text-blue-500" />
-                  <span className="text-lg font-medium text-blue-600">Fazer Upload</span>
+                  <Upload className="h-8 w-8" />
+                  <span className="text-lg font-medium">Fazer Upload</span>
                 </Button>
               </div>
               
@@ -345,20 +226,51 @@ const Index = () => {
             </Card>
           )}
 
-          {currentStep === 'processing' && (
-            <Card className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-0 text-center">
-              <div className="flex flex-col items-center gap-6">
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full p-4">
-                  <Loader2 className="h-8 w-8 text-white animate-spin" />
+          {currentStep === 'adjust' && processedImage && (
+            <Card className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-0">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+                  Remova o Fundo da Imagem
+                </h2>
+                <div className="flex justify-center mb-6">
+                  <div className="bg-white rounded-2xl p-4 shadow-lg">
+                    <img
+                      src={processedImage}
+                      alt="Original"
+                      className="max-w-64 max-h-80 object-contain rounded-xl"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-                    Processando sua Imagem
-                  </h2>
-                  <p className="text-gray-600">
-                    Removendo fundo e centralizando o rosto com IA avançada...
-                  </p>
-                </div>
+                <p className="text-gray-600 mb-6">
+                  Use o PhotoRoom para remover o fundo da sua foto. Depois baixe a imagem processada e faça upload novamente.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-4 items-center">
+                <Button
+                  onClick={openPhotoRoom}
+                  className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-8 py-3 rounded-xl text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105"
+                >
+                  <ExternalLink className="h-5 w-5 mr-2" />
+                  Abrir PhotoRoom
+                </Button>
+                
+                <Button
+                  onClick={handleUploadClick}
+                  variant="outline"
+                  className="border-2 border-blue-300 hover:border-blue-500 px-8 py-3 rounded-xl text-lg font-medium transition-all duration-300 hover:scale-105"
+                >
+                  <Upload className="h-5 w-5 mr-2" />
+                  Fazer Upload da Foto Processada
+                </Button>
+                
+                <Button
+                  onClick={processImageManually}
+                  variant="ghost"
+                  className="text-gray-500 hover:text-gray-700 rounded-xl"
+                >
+                  Continuar sem remover fundo
+                </Button>
               </div>
             </Card>
           )}
@@ -367,7 +279,7 @@ const Index = () => {
             <Card className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-0">
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                  Imagem Processada
+                  Imagem Ajustada (3x4)
                 </h2>
                 <div className="flex justify-center mb-6">
                   <div className="bg-white rounded-2xl p-4 shadow-lg">
@@ -379,7 +291,7 @@ const Index = () => {
                   </div>
                 </div>
                 <p className="text-sm text-gray-500 mb-4">
-                  Foto processada com foco no rosto e contorno preto para recorte
+                  Foto ajustada na proporção 3x4 com contorno preto para recorte
                 </p>
               </div>
 
@@ -434,22 +346,13 @@ const Index = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+              <div className="flex justify-center mb-6">
                 <Button
                   onClick={downloadPDF}
                   className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105"
                 >
                   <Download className="h-5 w-5 mr-2" />
                   Baixar PDF
-                </Button>
-                
-                <Button
-                  onClick={printPDF}
-                  variant="outline"
-                  className="border-2 border-gray-300 hover:border-gray-400 px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105"
-                >
-                  <Printer className="h-5 w-5 mr-2" />
-                  Imprimir Agora
                 </Button>
               </div>
 
