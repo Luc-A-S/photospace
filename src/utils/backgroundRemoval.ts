@@ -52,15 +52,16 @@ async function detectFace(canvas: HTMLCanvasElement) {
       )
     );
     
-    if (faceDetection && faceDetection.box) {
+    if (faceDetection && (faceDetection as any).bbox) {
       console.log('Face detected:', faceDetection);
-      // Use the box property from Hugging Face transformers
-      const box = faceDetection.box;
+      // Convert bbox array [x, y, width, height] to box coordinates
+      const bbox = (faceDetection as any).bbox;
+      const [x, y, width, height] = Array.isArray(bbox) ? bbox : [bbox.x, bbox.y, bbox.width, bbox.height];
       return {
-        xmin: box.xmin,
-        ymin: box.ymin,
-        xmax: box.xmax,
-        ymax: box.ymax
+        xmin: x,
+        ymin: y,
+        xmax: x + width,
+        ymax: y + height
       };
     }
     
