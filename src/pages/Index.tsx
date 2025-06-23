@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Camera, Upload, Download, Printer, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -24,6 +23,7 @@ const Index = () => {
   const [stream, setStream] = useState<MediaStream | null>(null);
 
   const handleFileSelect = (file: File) => {
+    console.log('File selected:', file.name);
     setOriginalImage(file);
     processImage(file);
   };
@@ -34,47 +34,73 @@ const Index = () => {
 
   const startCamera = async () => {
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user' }
-      });
+      console.log('Requesting camera access...');
+      const constraints = {
+        video: { 
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+      
+      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+      console.log('Camera access granted');
+      
       setStream(mediaStream);
       setShowCamera(true);
+      
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
+        videoRef.current.onloadedmetadata = () => {
+          console.log('Video metadata loaded');
+          videoRef.current?.play();
+        };
       }
     } catch (error) {
+      console.error('Camera access error:', error);
       toast({
         title: "Erro ao acessar câmera",
-        description: "Não foi possível acessar a câmera. Verifique as permissões.",
+        description: "Não foi possível acessar a câmera. Verifique as permissões do navegador.",
         variant: "destructive"
       });
     }
   };
 
   const capturePhoto = () => {
+    console.log('Capturing photo...');
     if (videoRef.current && canvasRef.current) {
       const canvas = canvasRef.current;
       const video = videoRef.current;
+      
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        ctx.drawImage(video, 0, 0);
+        // Flip image horizontally for selfie effect
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+        ctx.scale(-1, 1); // Reset transform
+        
         canvas.toBlob((blob) => {
           if (blob) {
+            console.log('Photo captured successfully');
             const file = new File([blob], 'camera-photo.jpg', { type: 'image/jpeg' });
             handleFileSelect(file);
             stopCamera();
           }
-        }, 'image/jpeg');
+        }, 'image/jpeg', 0.9);
       }
     }
   };
 
   const stopCamera = () => {
+    console.log('Stopping camera...');
     if (stream) {
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach(track => {
+        track.stop();
+        console.log('Camera track stopped:', track.kind);
+      });
       setStream(null);
     }
     setShowCamera(false);
@@ -104,7 +130,7 @@ const Index = () => {
       console.error('Error processing image:', error);
       toast({
         title: "Erro ao processar imagem",
-        description: "Não foi possível processar a imagem. Tente novamente.",
+        description: "Não foi possível processar a imagem. Tente novamente com uma foto mais clara.",
         variant: "destructive"
       });
       setCurrentStep('upload');
@@ -118,19 +144,20 @@ const Index = () => {
     
     setIsProcessing(true);
     try {
+      console.log('Generating PDF...');
       const pdf = await generatePDF(processedImage, quantity);
       setPdfBlob(pdf);
       setCurrentStep('final');
       
       toast({
         title: "PDF gerado!",
-        description: `${quantity} fotos 3x4 organizadas para impressão.`
+        description: `${quantity} fotos 3x4 organizadas com contornos para recorte.`
       });
     } catch (error) {
       console.error('Error generating PDF:', error);
       toast({
         title: "Erro ao gerar PDF",
-        description: "Não foi possível gerar o documento.",
+        description: "Não foi possível gerar o documento. Tente novamente.",
         variant: "destructive"
       });
     } finally {
@@ -140,40 +167,80 @@ const Index = () => {
 
   const downloadPDF = () => {
     if (pdfBlob) {
+      console.log('Downloading PDF...');
       const url = URL.createObjectURL(pdfBlob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `fotos-3x4-${quantity}-copias.pdf`;
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Download iniciado!",
+        description: "O PDF foi baixado com sucesso."
+      });
     }
   };
 
   const printPDF = () => {
     if (pdfBlob) {
+      console.log('Opening print dialog...');
       const url = URL.createObjectURL(pdfBlob);
+      
+      // Create a hidden iframe for printing
       const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = url;
+      iframe.style.position = 'fixed';
+      iframe.style.right = '0';
+      iframe.style.bottom = '0';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = 'none';
+      
       document.body.appendChild(iframe);
+      
       iframe.onload = () => {
-        iframe.contentWindow?.print();
+        console.log('PDF loaded in iframe, opening print dialog...');
+        try {
+          iframe.contentWindow?.focus();
+          iframe.contentWindow?.print();
+          
+          toast({
+            title: "Janela de impressão aberta!",
+            description: "Configure sua impressora para melhor qualidade."
+          });
+        } catch (error) {
+          console.error('Print error:', error);
+          // Fallback: open in new window
+          window.open(url, '_blank');
+        }
+        
+        // Clean up after a delay
         setTimeout(() => {
           document.body.removeChild(iframe);
           URL.revokeObjectURL(url);
         }, 1000);
       };
+      
+      iframe.src = url;
     }
   };
 
   const resetApp = () => {
+    console.log('Resetting app...');
     setCurrentStep('upload');
     setOriginalImage(null);
     setProcessedImage(null);
     setPdfBlob(null);
     setQuantity(4);
+    
     if (processedImage) {
       URL.revokeObjectURL(processedImage);
+    }
+    
+    if (stream) {
+      stopCamera();
     }
   };
 
@@ -191,7 +258,7 @@ const Index = () => {
             📸 Foto 3x4 Sem Fundo
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            PDF Pronto para Imprimir - Remova o fundo, centralize o rosto e gere múltiplas cópias organizadas
+            PDF Pronto para Imprimir - Remova o fundo, centralize o rosto e gere múltiplas cópias com contorno para recorte
           </p>
         </div>
 
@@ -206,7 +273,8 @@ const Index = () => {
                     ref={videoRef}
                     autoPlay
                     playsInline
-                    className="w-full h-64 object-cover"
+                    muted
+                    className="w-full h-64 object-cover transform scale-x-[-1]"
                   />
                 </div>
               </div>
@@ -288,7 +356,7 @@ const Index = () => {
                     Processando sua Imagem
                   </h2>
                   <p className="text-gray-600">
-                    Removendo fundo e centralizando o rosto com IA...
+                    Removendo fundo e centralizando o rosto com IA avançada...
                   </p>
                 </div>
               </div>
@@ -306,10 +374,13 @@ const Index = () => {
                     <img
                       src={processedImage}
                       alt="Processed"
-                      className="w-32 h-42 object-cover rounded-xl border-2 border-gray-200"
+                      className="w-32 h-42 object-cover rounded-xl border-2 border-black"
                     />
                   </div>
                 </div>
+                <p className="text-sm text-gray-500 mb-4">
+                  Foto processada com foco no rosto e contorno preto para recorte
+                </p>
               </div>
 
               <div className="max-w-md mx-auto mb-8">
@@ -359,7 +430,7 @@ const Index = () => {
                   PDF Pronto!
                 </h2>
                 <p className="text-gray-600">
-                  {quantity} fotos 3x4 organizadas para impressão em A4
+                  {quantity} fotos 3x4 com contornos pretos para fácil recorte
                 </p>
               </div>
 

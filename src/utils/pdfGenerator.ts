@@ -19,8 +19,8 @@ export const generatePDF = async (imageUrl: string, quantity: number): Promise<B
       const photoHeight = 40;
       
       // Margins and spacing
-      const margin = 10;
-      const spacing = 5;
+      const margin = 15;
+      const spacing = 8;
       
       // Calculate how many photos can fit per row and column
       const photosPerRow = Math.floor((pageWidth - 2 * margin + spacing) / (photoWidth + spacing));
@@ -32,6 +32,7 @@ export const generatePDF = async (imageUrl: string, quantity: number): Promise<B
       
       // Load the image first
       const img = new Image();
+      img.crossOrigin = 'anonymous';
       img.onload = () => {
         // Add photos to PDF
         for (let i = 0; i < quantity; i++) {
@@ -48,13 +49,33 @@ export const generatePDF = async (imageUrl: string, quantity: number): Promise<B
             currentPage++;
           }
           
-          // Add photo with border
-          pdf.setDrawColor(200, 200, 200); // Light gray border
-          pdf.setLineWidth(0.2);
+          // Add image first
+          pdf.addImage(img, 'PNG', x, y, photoWidth, photoHeight);
+          
+          // Add thick black border for easy cutting
+          pdf.setDrawColor(0, 0, 0); // Black color
+          pdf.setLineWidth(0.5); // Thicker line for visibility
           pdf.rect(x, y, photoWidth, photoHeight);
           
-          // Add image
-          pdf.addImage(img, 'PNG', x, y, photoWidth, photoHeight);
+          // Add cutting guides (small marks at corners)
+          const guideLength = 3;
+          pdf.setLineWidth(0.3);
+          
+          // Top-left corner guides
+          pdf.line(x - guideLength, y, x, y);
+          pdf.line(x, y - guideLength, x, y);
+          
+          // Top-right corner guides
+          pdf.line(x + photoWidth, y - guideLength, x + photoWidth, y);
+          pdf.line(x + photoWidth, y, x + photoWidth + guideLength, y);
+          
+          // Bottom-left corner guides
+          pdf.line(x - guideLength, y + photoHeight, x, y + photoHeight);
+          pdf.line(x, y + photoHeight, x, y + photoHeight + guideLength);
+          
+          // Bottom-right corner guides
+          pdf.line(x + photoWidth, y + photoHeight, x + photoWidth + guideLength, y + photoHeight);
+          pdf.line(x + photoWidth, y + photoHeight + guideLength, x + photoWidth, y + photoHeight);
           
           photoCount++;
         }
@@ -64,9 +85,9 @@ export const generatePDF = async (imageUrl: string, quantity: number): Promise<B
         for (let page = 1; page <= totalPages; page++) {
           pdf.setPage(page);
           pdf.setFontSize(8);
-          pdf.setTextColor(150, 150, 150);
+          pdf.setTextColor(100, 100, 100);
           pdf.text(
-            `Página ${page}/${totalPages} - ${quantity} fotos 3x4 - gerado por Foto 3x4 Sem Fundo`,
+            `Página ${page}/${totalPages} - ${quantity} fotos 3x4 - Recorte nas linhas pretas`,
             pageWidth / 2,
             pageHeight - 5,
             { align: 'center' }
