@@ -33,10 +33,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   downloadButtonText
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [zoom, setZoom] = useState([2.0]); // Aumentado de 1.5 para 2.0
+  const [zoom, setZoom] = useState([0.2]); // Alterado para 0.2x
   
-  const [brightness, setBrightness] = useState([115]); // Aumentado de 100 para 115
-  const [contrast, setContrast] = useState([100]);
+  const [brightness, setBrightness] = useState([115]); // Mantido em 115
+  const [contrast, setContrast] = useState([85]); // Alterado para 85
   const [highlights, setHighlights] = useState([0]);
   const [shadows, setShadows] = useState([0]);
   const [whites, setWhites] = useState([0]);
@@ -44,15 +44,15 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   
   const [invertColors, setInvertColors] = useState(false);
   const [vibrance, setVibrance] = useState([0]);
-  const [saturation, setSaturation] = useState([100]);
+  const [saturation, setSaturation] = useState([115]); // Alterado para 115
   
   const [sharpness, setSharpness] = useState([0]);
   const [clarity, setClarity] = useState([0]);
   const [vignette, setVignette] = useState([0]);
   
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [positionX, setPositionX] = useState([0]);
-  const [positionY, setPositionY] = useState([0]);
+  const [position, setPosition] = useState({ x: -35, y: 145 }); // Alterado para os novos valores padrão
+  const [positionX, setPositionX] = useState([-35]); // Alterado para -35px
+  const [positionY, setPositionY] = useState([145]); // Alterado para 145px
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState(0);
@@ -180,18 +180,21 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     const img = new Image();
     img.onload = async () => {
       setImage(img);
-      const scale = Math.min(canvasWidth / img.naturalWidth, canvasHeight / img.naturalHeight) * 2.5; // Aumentado de 2 para 2.5
-      setZoom([Math.min(scale, 4)]); // Aumentado limite máximo de 3 para 4
+      const scale = Math.min(canvasWidth / img.naturalWidth, canvasHeight / img.naturalHeight) * 2.5;
+      setZoom([0.2]); // Definido como 0.2x por padrão
       
       // Aplicar posicionamento automático apenas uma vez
       if (!autoPositioned) {
-        await detectFaceAndPosition(img);
+        // Definir posição padrão sem detecção automática
+        setPosition({ x: -35, y: 145 });
+        setPositionX([-35]);
+        setPositionY([145]);
         setAutoPositioned(true);
         
         // Aplicar ajustes automáticos de qualidade
-        setBrightness([115]); // Aumentado de 105 para 115
-        setContrast([115]); // Aumentado de 110 para 115
-        setSaturation([110]); // Aumentado de 105 para 110
+        setBrightness([115]);
+        setContrast([85]); // Alterado para 85
+        setSaturation([115]); // Alterado para 115
       }
     };
     img.src = imageUrl;
@@ -295,27 +298,26 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   };
 
   const resetPosition = () => {
-    setPosition({ x: 0, y: 0 });
-    setPositionX([0]);
-    setPositionY([0]);
+    setPosition({ x: -35, y: 145 }); // Alterado para os novos valores padrão
+    setPositionX([-35]); // Alterado para -35px
+    setPositionY([145]); // Alterado para 145px
     setRotation(0);
-    setBrightness([115]); // Alterado de 100 para 115
-    setContrast([100]);
+    setBrightness([115]);
+    setContrast([85]); // Alterado para 85
     setHighlights([0]);
     setShadows([0]);
     setWhites([0]);
     setBlacks([0]);
     setInvertColors(false);
     setVibrance([0]);
-    setSaturation([100]);
+    setSaturation([115]); // Alterado para 115
     setSharpness([0]);
     setClarity([0]);
     setVignette([0]);
     setAutoPositioned(false);
     
     if (image) {
-      const scale = Math.min(canvasWidth / image.naturalWidth, canvasHeight / image.naturalHeight) * 2.5; // Aumentado de 2 para 2.5
-      setZoom([Math.min(scale, 4)]); // Aumentado limite máximo de 3 para 4
+      setZoom([0.2]); // Definido como 0.2x por padrão
     }
   };
 
