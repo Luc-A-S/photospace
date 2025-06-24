@@ -253,6 +253,18 @@ const Index = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-purple-800/20 to-blue-800/20"></div>
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-600/10 via-transparent to-transparent"></div>
       
+      {/* Animated Spotlights */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* First spotlight */}
+        <div className="absolute w-96 h-96 bg-gradient-to-r from-transparent via-purple-400/20 to-transparent blur-3xl animate-spotlight"></div>
+        
+        {/* Second spotlight - reverse direction */}
+        <div className="absolute w-80 h-80 bg-gradient-to-r from-transparent via-blue-400/15 to-transparent blur-3xl animate-spotlight-reverse"></div>
+        
+        {/* Third spotlight - smaller, different timing */}
+        <div className="absolute w-64 h-64 bg-gradient-to-r from-transparent via-pink-400/10 to-transparent blur-2xl animate-spotlight" style={{animationDelay: '6s', animationDuration: '18s'}}></div>
+      </div>
+      
       <div className="container mx-auto px-4 py-4 sm:py-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
