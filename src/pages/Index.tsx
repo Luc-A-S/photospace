@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard } from 'lucide-react';
+import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,34 +9,40 @@ import { generatePDF } from '@/utils/pdfGenerator';
 import { toast } from '@/hooks/use-toast';
 import ImageEditor from '@/components/ImageEditor';
 import PhotoTypeSelector from '@/components/PhotoTypeSelector';
+import MultiImageEditor from '@/components/MultiImageEditor';
+import BackgroundRemovalStep from '@/components/BackgroundRemovalStep';
+import QuantitySelector from '@/components/QuantitySelector';
 
 interface PhotoType {
   id: string;
   name: string;
   dimensions: string;
   description: string;
-  width: number; // in mm
-  height: number; // in mm
+  width: number;
+  height: number;
+}
+
+interface ImageFile {
+  id: string;
+  file: File;
+  url: string;
+  adjustedUrl?: string;
+  processedUrl?: string;
+  quantity: number;
 }
 
 const Index = () => {
-  const [currentStep, setCurrentStep] = useState<'photoType' | 'editor' | 'photoroom' | 'quantity' | 'final'>('photoType');
+  const [currentStep, setCurrentStep] = useState<'photoType' | 'upload' | 'multiEditor' | 'backgroundRemoval' | 'quantity' | 'final'>('photoType');
   const [selectedPhotoType, setSelectedPhotoType] = useState<PhotoType | null>(null);
-  const [originalImage, setOriginalImage] = useState<File | null>(null);
-  const [processedImage, setProcessedImage] = useState<string | null>(null);
-  const [adjustedImage, setAdjustedImage] = useState<string | null>(null);
-  const [quantity, setQuantity] = useState(2);
+  const [images, setImages] = useState<ImageFile[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
-  const [isLoadingPaste, setIsLoadingPaste] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const photoRoomUploadRef = useRef<HTMLInputElement>(null);
 
   const handlePhotoTypeSelect = (photoType: PhotoType) => {
     console.log('Photo type selected:', photoType);
     
-    // Add width and height in mm based on the selected type
     const photoTypeWithDimensions = {
       ...photoType,
       width: photoType.id === '3x4' ? 30 : 
@@ -54,131 +60,131 @@ const Index = () => {
     };
     
     setSelectedPhotoType(photoTypeWithDimensions);
-    
-    // Show file input dialog immediately
-    fileInputRef.current?.click();
+    setCurrentStep('upload');
     
     toast({
       title: `${photoType.name} selecionada!`,
-      description: `Escolha sua imagem para criar fotos ${photoType.dimensions}.`
+      description: `Agora faça upload das imagens para criar fotos ${photoType.dimensions}.`
     });
   };
 
-  const handleFileSelect = (file: File) => {
-    console.log('File selected:', file.name);
-    setOriginalImage(file);
+  const handleFileSelect = (files: FileList) => {
+    const newImages: ImageFile[] = [];
     
-    const imageUrl = URL.createObjectURL(file);
-    setProcessedImage(imageUrl);
-    setCurrentStep('editor');
+    Array.from(files).forEach((file, index) => {
+      const imageId = `image-${Date.now()}-${index}`;
+      const imageUrl = URL.createObjectURL(file);
+      
+      newImages.push({
+        id: imageId,
+        file,
+        url: imageUrl,
+        quantity: 2
+      });
+    });
+    
+    setImages(prev => [...prev, ...newImages]);
     
     toast({
-      title: "Imagem carregada!",
-      description: `Agora ajuste a posição da imagem na proporção ${selectedPhotoType?.dimensions}.`
+      title: "Imagens carregadas!",
+      description: `${newImages.length} imagem(ns) adicionada(s). Adicione mais ou clique em Editar.`
     });
   };
 
-  const handlePasteImage = async () => {
-    setIsLoadingPaste(true);
-    try {
-      const clipboardItems = await navigator.clipboard.read();
-      
-      for (const clipboardItem of clipboardItems) {
-        for (const type of clipboardItem.types) {
-          if (type.startsWith('image/')) {
-            const blob = await clipboardItem.getType(type);
-            const file = new File([blob], 'pasted-image.png', { type });
-            handleFileSelect(file);
-            return;
-          }
-        }
+  const removeImage = (imageId: string) => {
+    setImages(prev => {
+      const updated = prev.filter(img => img.id !== imageId);
+      const imageToRemove = prev.find(img => img.id === imageId);
+      if (imageToRemove) {
+        URL.revokeObjectURL(imageToRemove.url);
+        if (imageToRemove.adjustedUrl) URL.revokeObjectURL(imageToRemove.adjustedUrl);
+        if (imageToRemove.processedUrl) URL.revokeObjectURL(imageToRemove.processedUrl);
       }
-      
-      toast({
-        title: "Nenhuma imagem encontrada",
-        description: "Copie uma imagem e tente novamente.",
-        variant: "destructive"
-      });
-    } catch (error) {
-      toast({
-        title: "Erro ao colar imagem",
-        description: "Não foi possível acessar a área de transferência.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoadingPaste(false);
-    }
-  };
-
-  const handleImageAdjusted = (adjustedImageUrl: string) => {
-    setAdjustedImage(adjustedImageUrl);
-    setCurrentStep('photoroom');
+      return updated;
+    });
     
     toast({
-      title: "Imagem ajustada!",
-      description: "Baixe a imagem, use o PhotoRoom para remover o fundo e depois faça upload aqui."
+      title: "Imagem removida",
+      description: "A imagem foi removida da lista."
     });
   };
 
-  const openPhotoRoom = () => {
-    console.log('Opening PhotoRoom...');
-    const photoRoomUrl = 'https://www.photoroom.com/pt-br/ferramentas/remover-fundo-de-imagem';
-    
-    const width = 800;
-    const height = 600;
-    const left = (window.screen.width / 2) - (width / 2);
-    const top = (window.screen.height / 2) - (height / 2);
-    
-    const popup = window.open(
-      photoRoomUrl,
-      'photoroom',
-      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no`
+  const proceedToEdit = () => {
+    if (images.length === 0) {
+      toast({
+        title: "Nenhuma imagem",
+        description: "Adicione pelo menos uma imagem antes de continuar.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setCurrentStep('multiEditor');
+  };
+
+  const handleImageAdjusted = (imageId: string, adjustedUrl: string) => {
+    setImages(prev => 
+      prev.map(img => 
+        img.id === imageId ? { ...img, adjustedUrl } : img
+      )
     );
-    
-    if (popup) {
+  };
+
+  const proceedToBackgroundRemoval = () => {
+    const allAdjusted = images.every(img => img.adjustedUrl);
+    if (!allAdjusted) {
       toast({
-        title: "PhotoRoom aberto!",
-        description: "Use o PhotoRoom para remover o fundo da imagem baixada."
+        title: "Imagens não ajustadas",
+        description: "Ajuste todas as imagens antes de continuar.",
+        variant: "destructive"
       });
-    } else {
-      window.open(photoRoomUrl, '_blank');
-      toast({
-        title: "PhotoRoom aberto em nova aba!",
-        description: "Use o PhotoRoom para remover o fundo da imagem baixada."
-      });
+      return;
     }
+    setCurrentStep('backgroundRemoval');
   };
 
-  const handlePhotoRoomUpload = () => {
-    photoRoomUploadRef.current?.click();
+  const handleProcessedImageUpload = (imageId: string, processedUrl: string) => {
+    setImages(prev => 
+      prev.map(img => 
+        img.id === imageId ? { ...img, processedUrl } : img
+      )
+    );
   };
 
-  const handlePhotoRoomFileSelect = (file: File) => {
-    console.log('PhotoRoom processed file selected:', file.name);
-    
-    const imageUrl = URL.createObjectURL(file);
-    setProcessedImage(imageUrl);
+  const proceedToQuantity = () => {
+    const allProcessed = images.every(img => img.processedUrl);
+    if (!allProcessed) {
+      toast({
+        title: "Imagens não processadas",
+        description: "Faça upload de todas as imagens sem fundo antes de continuar.",
+        variant: "destructive"
+      });
+      return;
+    }
     setCurrentStep('quantity');
-    
-    toast({
-      title: "Imagem sem fundo carregada!",
-      description: "Agora escolha quantas cópias deseja gerar."
-    });
+  };
+
+  const handleQuantityUpdate = (imageId: string, quantity: number) => {
+    setImages(prev => 
+      prev.map(img => 
+        img.id === imageId ? { ...img, quantity } : img
+      )
+    );
   };
 
   const generateDocument = async () => {
-    if (!processedImage || !selectedPhotoType) return;
+    if (!selectedPhotoType || images.length === 0) return;
     
     setIsProcessing(true);
     try {
       console.log('Generating PDF...');
-      const pdf = await generatePDF(processedImage, quantity, selectedPhotoType.width, selectedPhotoType.height);
+      const pdf = await generatePDF(images, selectedPhotoType.width, selectedPhotoType.height);
       setPdfBlob(pdf);
       setCurrentStep('final');
       
+      const totalPhotos = images.reduce((sum, img) => sum + img.quantity, 0);
       toast({
         title: "PDF gerado!",
-        description: `${quantity} ${selectedPhotoType.name} organizadas com contornos para recorte.`
+        description: `${totalPhotos} fotos ${selectedPhotoType.name} organizadas com contornos para recorte.`
       });
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -213,38 +219,23 @@ const Index = () => {
 
   const resetApp = () => {
     console.log('Resetting app...');
+    images.forEach(img => {
+      URL.revokeObjectURL(img.url);
+      if (img.adjustedUrl) URL.revokeObjectURL(img.adjustedUrl);
+      if (img.processedUrl) URL.revokeObjectURL(img.processedUrl);
+    });
+    
     setCurrentStep('photoType');
     setSelectedPhotoType(null);
-    setOriginalImage(null);
-    setProcessedImage(null);
-    setAdjustedImage(null);
+    setImages([]);
     setPdfBlob(null);
-    setQuantity(2);
-    
-    if (processedImage) {
-      URL.revokeObjectURL(processedImage);
-    }
-    if (adjustedImage) {
-      URL.revokeObjectURL(adjustedImage);
-    }
   };
 
-  const goBackToPhotoType = () => {
-    setCurrentStep('photoType');
-    setProcessedImage(null);
-    setAdjustedImage(null);
-  };
-
-  const goBackToEditor = () => {
-    setCurrentStep('editor');
-  };
-
-  const goBackToPhotoRoom = () => {
-    setCurrentStep('photoroom');
-  };
-
-  const goBackToQuantity = () => {
-    setCurrentStep('quantity');
+  const goBack = () => {
+    if (currentStep === 'upload') setCurrentStep('photoType');
+    else if (currentStep === 'multiEditor') setCurrentStep('upload');
+    else if (currentStep === 'backgroundRemoval') setCurrentStep('multiEditor');
+    else if (currentStep === 'quantity') setCurrentStep('backgroundRemoval');
   };
 
   return (
@@ -255,16 +246,9 @@ const Index = () => {
       
       {/* Animated Spotlights */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* First spotlight - more prominent */}
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-r from-transparent via-purple-400/40 to-transparent blur-2xl animate-spotlight shadow-2xl"></div>
-        
-        {/* Second spotlight - reverse direction with stronger blue */}
         <div className="absolute w-[400px] h-[400px] bg-gradient-to-r from-transparent via-blue-400/35 to-transparent blur-2xl animate-spotlight-reverse shadow-xl"></div>
-        
-        {/* Third spotlight - pink accent with higher opacity */}
         <div className="absolute w-[350px] h-[350px] bg-gradient-to-r from-transparent via-pink-400/30 to-transparent blur-xl animate-spotlight shadow-lg" style={{animationDelay: '6s', animationDuration: '18s'}}></div>
-        
-        {/* Fourth spotlight - cyan accent for more variety */}
         <div className="absolute w-[300px] h-[300px] bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent blur-2xl animate-spotlight-reverse shadow-lg" style={{animationDelay: '9s', animationDuration: '20s'}}></div>
       </div>
       
@@ -295,41 +279,17 @@ const Index = () => {
         </div>
 
         {/* Main Content */}
-        
         <div className="max-w-4xl mx-auto px-2 sm:px-0">
           {currentStep === 'photoType' && (
-            <div>
-              <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
-              
-              {/* Hidden file input */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleFileSelect(file);
-                }}
-                className="hidden"
-              />
-            </div>
+            <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
           )}
 
-          {currentStep === 'editor' && processedImage && selectedPhotoType && (
-            <ImageEditor
-              imageUrl={processedImage}
-              onDownload={handleImageAdjusted}
-              onBack={goBackToPhotoType}
-              photoType={selectedPhotoType}
-            />
-          )}
-
-          {currentStep === 'photoroom' && adjustedImage && (
+          {currentStep === 'upload' && (
             <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-4 sm:p-8 shadow-2xl border border-purple-500/20">
               <div className="text-center mb-6 sm:mb-8">
                 <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                   <Button
-                    onClick={goBackToEditor}
+                    onClick={goBack}
                     className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
                   >
                     <ArrowLeft className="h-4 w-4" />
@@ -337,7 +297,7 @@ const Index = () => {
                   </Button>
                   <div className="text-center flex-1">
                     <h2 className="text-xl sm:text-2xl font-semibold text-white text-center">
-                      Remover Fundo no PhotoRoom
+                      Upload de Imagens
                     </h2>
                     {selectedPhotoType && (
                       <div className="text-sm text-purple-300 bg-purple-500/20 rounded-lg px-3 py-1 inline-block mt-2">
@@ -348,113 +308,101 @@ const Index = () => {
                   <div className="hidden sm:block w-[100px]"></div>
                 </div>
                 <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base px-2">
-                  Sua imagem {selectedPhotoType?.name || ''} já foi baixada. Agora use o PhotoRoom para remover o fundo e depois faça upload da imagem processada.
+                  Selecione múltiplas imagens para criar fotos {selectedPhotoType?.dimensions || ''}.
                 </p>
               </div>
 
-              <div className="flex flex-col gap-4 items-center">
+              <div className="flex flex-col items-center gap-6">
                 <Button
-                  onClick={openPhotoRoom}
-                  className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 border border-purple-400/30"
-                >
-                  <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                  Abrir PhotoRoom
-                </Button>
-                
-                <Button
-                  onClick={handlePhotoRoomUpload}
+                  onClick={() => fileInputRef.current?.click()}
                   className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
                 >
                   <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                  Upload da Imagem Sem Fundo
+                  Selecionar Imagens
                 </Button>
-              </div>
 
-              <input
-                ref={photoRoomUploadRef}
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handlePhotoRoomFileSelect(file);
-                }}
-                className="hidden"
-              />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => {
+                    if (e.target.files) handleFileSelect(e.target.files);
+                  }}
+                  className="hidden"
+                />
+
+                {images.length > 0 && (
+                  <div className="w-full space-y-4">
+                    <h3 className="text-lg font-medium text-white text-center">
+                      Imagens Anexadas ({images.length})
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {images.map((image, index) => (
+                        <div key={image.id} className="bg-slate-700/50 rounded-xl p-3 relative">
+                          <img
+                            src={image.url}
+                            alt={`Imagem ${index + 1}`}
+                            className="w-full h-24 object-cover rounded-lg mb-2"
+                          />
+                          <p className="text-xs text-gray-300 text-center mb-2">
+                            Imagem {index + 1}
+                          </p>
+                          <Button
+                            onClick={() => removeImage(image.id)}
+                            size="sm"
+                            className="w-full bg-red-500 hover:bg-red-600 text-white"
+                          >
+                            <Trash2 className="h-3 w-3 mr-1" />
+                            Remover
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="flex justify-center">
+                      <Button
+                        onClick={proceedToEdit}
+                        className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105"
+                      >
+                        <Edit3 className="h-4 w-4 mr-2" />
+                        Editar Imagens
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </Card>
           )}
 
-          {currentStep === 'quantity' && processedImage && (
-            <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-4 sm:p-8 shadow-2xl border border-purple-500/20">
-              <div className="text-center mb-6 sm:mb-8">
-                <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
-                  <Button
-                    onClick={goBackToPhotoRoom}
-                    className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Voltar
-                  </Button>
-                  <div className="text-center flex-1">
-                    <h2 className="text-xl sm:text-2xl font-semibold text-white text-center">
-                      Imagem Final ({selectedPhotoType?.name || ''} sem fundo)
-                    </h2>
-                    {selectedPhotoType && (
-                      <div className="text-sm text-purple-300 bg-purple-500/20 rounded-lg px-3 py-1 inline-block mt-2">
-                        {selectedPhotoType.dimensions}
-                      </div>
-                    )}
-                  </div>
-                  <div className="hidden sm:block w-[100px]"></div>
-                </div>
-                <div className="flex justify-center mb-4 sm:mb-6">
-                  <div className="bg-slate-700/50 rounded-2xl p-4 shadow-xl">
-                    <img
-                      src={processedImage}
-                      alt="Processed"
-                      className="w-24 h-32 sm:w-32 sm:h-42 object-cover rounded-xl"
-                    />
-                  </div>
-                </div>
-                <p className="text-xs sm:text-sm text-gray-400 mb-4">
-                  {selectedPhotoType?.name || 'Foto'} sem fundo, pronta para gerar o PDF
-                </p>
-              </div>
+          {currentStep === 'multiEditor' && selectedPhotoType && (
+            <MultiImageEditor
+              images={images}
+              photoType={selectedPhotoType}
+              onImageAdjusted={handleImageAdjusted}
+              onBack={goBack}
+              onContinue={proceedToBackgroundRemoval}
+            />
+          )}
 
-              <div className="max-w-md mx-auto mb-6 sm:mb-8">
-                <Label htmlFor="quantity" className="text-base sm:text-lg font-medium text-white mb-3 block">
-                  Quantas fotos deseja gerar?
-                </Label>
-                <Input
-                  id="quantity"
-                  type="number"
-                  min="1"
-                  max="50"
-                  value={quantity}
-                  onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                  className="text-center text-lg rounded-xl py-3 border-2 border-purple-400/30 bg-slate-700/50 text-white focus:border-purple-500 backdrop-blur-sm"
-                />
-              </div>
+          {currentStep === 'backgroundRemoval' && (
+            <BackgroundRemovalStep
+              images={images}
+              onProcessedImageUpload={handleProcessedImageUpload}
+              onBack={goBack}
+              onContinue={proceedToQuantity}
+            />
+          )}
 
-              <div className="flex justify-center">
-                <Button
-                  onClick={generateDocument}
-                  disabled={isProcessing}
-                  className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105"
-                >
-                  {isProcessing ? (
-                    <>
-                      <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2 animate-spin" />
-                      Gerando PDF...
-                    </>
-                  ) : (
-                    <>
-                      <Download className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                      Gerar PDF
-                    </>
-                  )}
-                </Button>
-              </div>
-            </Card>
+          {currentStep === 'quantity' && selectedPhotoType && (
+            <QuantitySelector
+              images={images}
+              photoType={selectedPhotoType}
+              onQuantityUpdate={handleQuantityUpdate}
+              onBack={goBack}
+              onGeneratePDF={generateDocument}
+              isProcessing={isProcessing}
+            />
           )}
 
           {currentStep === 'final' && pdfBlob && (
@@ -467,7 +415,7 @@ const Index = () => {
                   PDF Pronto!
                 </h2>
                 <p className="text-gray-300 text-sm sm:text-base">
-                  {quantity} {selectedPhotoType?.name || 'fotos'} ({selectedPhotoType?.dimensions || ''}) com contornos pretos para fácil recorte
+                  {images.reduce((sum, img) => sum + img.quantity, 0)} {selectedPhotoType?.name || 'fotos'} ({selectedPhotoType?.dimensions || ''}) com contornos pretos para fácil recorte
                 </p>
               </div>
 

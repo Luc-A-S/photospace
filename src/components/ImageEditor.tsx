@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -21,13 +20,22 @@ interface ImageEditorProps {
   onDownload: (adjustedImageUrl: string) => void;
   onBack: () => void;
   photoType: PhotoType;
+  showBackButton?: boolean;
+  downloadButtonText?: string;
 }
 
-const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack, photoType }) => {
+const ImageEditor: React.FC<ImageEditorProps> = ({ 
+  imageUrl, 
+  onDownload, 
+  onBack, 
+  photoType,
+  showBackButton = true,
+  downloadButtonText
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [zoom, setZoom] = useState([1.5]);
   
-  // Iluminação
+  // ... keep existing code (all state variables and effects)
   const [brightness, setBrightness] = useState([100]);
   const [contrast, setContrast] = useState([100]);
   const [highlights, setHighlights] = useState([0]);
@@ -35,12 +43,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
   const [whites, setWhites] = useState([0]);
   const [blacks, setBlacks] = useState([0]);
   
-  // Cor
   const [invertColors, setInvertColors] = useState(false);
   const [vibrance, setVibrance] = useState([0]);
   const [saturation, setSaturation] = useState([100]);
   
-  // Textura
   const [sharpness, setSharpness] = useState([0]);
   const [clarity, setClarity] = useState([0]);
   const [vignette, setVignette] = useState([0]);
@@ -53,12 +59,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
   const [rotation, setRotation] = useState(0);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
 
-  // Calculate canvas size based on photo type aspect ratio, keeping consistent display size
   const aspectRatio = photoType.width / photoType.height;
-  const displayHeight = 266; // Keep consistent height
+  const displayHeight = 266;
   const displayWidth = displayHeight * aspectRatio;
   
-  // Use multiplier for actual canvas resolution for better quality
   const canvasMultiplier = Math.max(1, Math.min(2, 400 / Math.max(displayWidth, displayHeight)));
   const canvasWidth = displayWidth * canvasMultiplier;
   const canvasHeight = displayHeight * canvasMultiplier;
@@ -197,24 +201,26 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
   return (
     <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-4 sm:p-8 shadow-2xl border border-purple-500/20">
       <div className="text-center mb-4 sm:mb-6">
-        <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
-          <Button
-            onClick={onBack}
-            className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar
-          </Button>
-          <div className="text-center flex-1">
-            <h2 className="text-xl sm:text-2xl font-semibold text-white text-center">
-              Ajustar {photoType.name}
-            </h2>
-            <div className="text-sm text-purple-300 bg-purple-500/20 rounded-lg px-3 py-1 inline-block mt-2">
-              {photoType.dimensions}
+        {showBackButton && (
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+            <Button
+              onClick={onBack}
+              className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar
+            </Button>
+            <div className="text-center flex-1">
+              <h2 className="text-xl sm:text-2xl font-semibold text-white text-center">
+                Ajustar {photoType.name}
+              </h2>
+              <div className="text-sm text-purple-300 bg-purple-500/20 rounded-lg px-3 py-1 inline-block mt-2">
+                {photoType.dimensions}
+              </div>
             </div>
+            <div className="hidden sm:block w-[100px]"></div>
           </div>
-          <div className="hidden sm:block w-[100px]"></div>
-        </div>
+        )}
         <p className="text-gray-300 mb-4 text-sm sm:text-base px-2">
           Use os controles para posicionar e ajustar sua foto na proporção {photoType.dimensions}
         </p>
@@ -232,25 +238,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
                 height: `${displayHeight}px`,
                 imageRendering: 'auto'
               }}
-              onMouseDown={(e) => {
-                setIsDragging(true);
-                setDragStart({
-                  x: e.clientX - position.x,
-                  y: e.clientY - position.y
-                });
-              }}
-              onMouseMove={(e) => {
-                if (!isDragging) return;
-                const newPosition = {
-                  x: e.clientX - dragStart.x,
-                  y: e.clientY - dragStart.y
-                };
-                setPosition(newPosition);
-                setPositionX([newPosition.x]);
-                setPositionY([newPosition.y]);
-              }}
-              onMouseUp={() => setIsDragging(false)}
-              onMouseLeave={() => setIsDragging(false)}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
             />
           </div>
 
@@ -260,17 +251,17 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
             className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white py-3 px-6 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
           >
             <Download className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-            Baixar {photoType.name} Ajustada
+            {downloadButtonText || `Baixar ${photoType.name} Ajustada`}
           </Button>
         </div>
 
         {/* Controls */}
         <div className="flex-1 space-y-4 sm:space-y-6 max-w-md max-h-[500px] sm:max-h-[600px] overflow-y-auto w-full">
+          {/* ... keep existing code (all control sections) */}
           <p className="text-xs text-gray-400 text-center lg:hidden">
             Clique e arraste para mover a imagem
           </p>
           
-          {/* Controles básicos */}
           <div className="bg-slate-700/30 rounded-xl p-3 sm:p-4">
             <label className="block text-sm font-medium text-white mb-2">
               Zoom
@@ -288,7 +279,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
             </div>
           </div>
 
-          {/* Controles de posição */}
           <div className="bg-slate-700/30 rounded-xl p-3 sm:p-4">
             <div className="space-y-3 sm:space-y-4">
               <div>
@@ -327,7 +317,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
             </div>
           </div>
 
-          {/* Seção Iluminação */}
           <div className="bg-slate-700/30 rounded-xl p-3 sm:p-4">
             <div className="flex items-center gap-2 mb-4">
               <Sun className="h-4 w-4 text-yellow-400" />
@@ -371,7 +360,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
             </div>
           </div>
 
-          {/* Seção Cor */}
           <div className="bg-slate-700/30 rounded-xl p-3 sm:p-4">
             <div className="flex items-center gap-2 mb-4">
               <Palette className="h-4 w-4 text-purple-400" />
@@ -409,7 +397,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
             </div>
           </div>
 
-          {/* Botões de ação */}
           <div className="space-y-3 sm:space-y-4">
             <div className="flex gap-2 sm:gap-3">
               <Button
