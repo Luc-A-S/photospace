@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -283,10 +284,7 @@ const Index = () => {
             PhotoSpace
           </h1>
           <p className="text-sm text-purple-300/80 mb-3 font-medium">
-            <span className="inline-block overflow-hidden whitespace-nowrap border-r-2 border-purple-300/80 animate-typing">
-              Criado por Bazar do Izaias
-            </span>
-            <span className="animate-blink">|</span>
+            Criado por Bazar do Izaias
           </p>
           <p className="text-sm sm:text-lg text-gray-300 max-w-2xl mx-auto px-4 leading-relaxed">
             {selectedPhotoType ? 
