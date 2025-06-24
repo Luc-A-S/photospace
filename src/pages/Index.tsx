@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -264,15 +263,19 @@ const Index = () => {
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent mb-2 sm:mb-4 px-4">
             PhotoSpace
           </h1>
+          <p className="text-sm text-purple-300/80 mb-3 font-medium">
+            Criado por Bazar do Izaias
+          </p>
           <p className="text-sm sm:text-lg text-gray-300 max-w-2xl mx-auto px-4 leading-relaxed">
             {selectedPhotoType ? 
-              `Criando ${selectedPhotoType.name} (${selectedPhotoType.dimensions}) - PDF Pronto para Imprimir` :
-              'PDF Pronto para Imprimir - Escolha o tipo de foto, faça upload, ajuste e gere múltiplas cópias'
+              `Criando ${selectedPhotoType.name} (${selectedPhotoType.dimensions}) - Prepare, Ajuste, Imprima, e Pronto!` :
+              'Prepare, Ajuste, Imprima, e Pronto!'
             }
           </p>
         </div>
 
         {/* Main Content */}
+        
         <div className="max-w-4xl mx-auto px-2 sm:px-0">
           {currentStep === 'photoType' && (
             <div>
