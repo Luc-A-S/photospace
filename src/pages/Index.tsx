@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, Heart, HelpCircle } from 'lucide-react';
+import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,8 +11,6 @@ import PhotoTypeSelector from '@/components/PhotoTypeSelector';
 import MultiImageEditor from '@/components/MultiImageEditor';
 import BackgroundRemovalStep from '@/components/BackgroundRemovalStep';
 import QuantitySelector from '@/components/QuantitySelector';
-import Tutorial from '@/components/Tutorial';
-import { useTutorial } from '@/hooks/useTutorial';
 
 interface PhotoType {
   id: string;
@@ -41,16 +39,6 @@ const Index = () => {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const {
-    isTutorialOpen,
-    currentTutorialStep,
-    startTutorial,
-    closeTutorial,
-    setTutorialStep,
-    completeTutorialStep,
-    shouldShowTutorial
-  } = useTutorial();
-
   const handlePhotoTypeSelect = (photoType: PhotoType) => {
     console.log('Photo type selected:', photoType);
     
@@ -72,7 +60,6 @@ const Index = () => {
     
     setSelectedPhotoType(photoTypeWithDimensions);
     setCurrentStep('upload');
-    setTutorialStep('upload');
     
     toast({
       title: `${photoType.name} selecionada!`,
@@ -131,7 +118,6 @@ const Index = () => {
       return;
     }
     setCurrentStep('multiEditor');
-    setTutorialStep('edit');
   };
 
   const handleImageAdjusted = (imageId: string, adjustedUrl: string) => {
@@ -153,7 +139,6 @@ const Index = () => {
       return;
     }
     setCurrentStep('backgroundRemoval');
-    setTutorialStep('background');
   };
 
   const handleProcessedImageUpload = (imageId: string, processedUrl: string) => {
@@ -175,7 +160,6 @@ const Index = () => {
       return;
     }
     setCurrentStep('quantity');
-    setTutorialStep('quantity');
   };
 
   const handleQuantityUpdate = (imageId: string, quantity: number) => {
@@ -190,8 +174,6 @@ const Index = () => {
     if (!selectedPhotoType || images.length === 0) return;
     
     setIsProcessing(true);
-    setTutorialStep('generate');
-    
     try {
       console.log('Generating PDF...');
       const pdf = await generatePDF(images, selectedPhotoType.width, selectedPhotoType.height);
@@ -249,7 +231,6 @@ const Index = () => {
     setSelectedPhotoType(null);
     setImages([]);
     setPdfBlob(null);
-    setTutorialStep('photoType');
   };
 
   const goBack = () => {
@@ -276,7 +257,7 @@ const Index = () => {
       <div className="container mx-auto px-4 py-4 sm:py-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
-          <div className="flex items-center justify-center mb-4 sm:mb-6 relative">
+          <div className="flex items-center justify-center mb-4 sm:mb-6">
             <div className="bg-white rounded-2xl p-3 shadow-2xl">
               <img 
                 src="/lovable-uploads/a9286ee7-5793-4963-9b72-95cfb16e6374.png" 
@@ -284,17 +265,7 @@ const Index = () => {
                 className="h-6 w-6 sm:h-8 sm:w-8"
               />
             </div>
-            
-            {/* Tutorial toggle button */}
-            <Button
-              onClick={startTutorial}
-              className="absolute right-0 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-3 py-2 rounded-lg text-sm shadow-lg transition-all duration-300 hover:scale-105"
-            >
-              <HelpCircle className="h-4 w-4 mr-1" />
-              Tutorial
-            </Button>
           </div>
-          
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent mb-2 sm:mb-4 px-4">
             PhotoSpace
           </h1>
@@ -312,9 +283,7 @@ const Index = () => {
         {/* Main Content */}
         <div className="max-w-4xl mx-auto px-2 sm:px-0">
           {currentStep === 'photoType' && (
-            <div data-tutorial-target="photo-type-selector">
-              <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
-            </div>
+            <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
           )}
 
           {currentStep === 'upload' && (
@@ -346,15 +315,13 @@ const Index = () => {
               </div>
 
               <div className="flex flex-col items-center gap-6">
-                <div data-tutorial-target="upload-button">
-                  <Button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
-                  >
-                    <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                    Selecionar Imagens
-                  </Button>
-                </div>
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
+                >
+                  <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                  Selecionar Imagens
+                </Button>
 
                 <input
                   ref={fileInputRef}
@@ -396,15 +363,13 @@ const Index = () => {
                     </div>
                     
                     <div className="flex justify-center">
-                      <div data-tutorial-target="edit-button">
-                        <Button
-                          onClick={proceedToEdit}
-                          className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105"
-                        >
-                          <Edit3 className="h-4 w-4 mr-2" />
-                          Editar Imagens
-                        </Button>
-                      </div>
+                      <Button
+                        onClick={proceedToEdit}
+                        className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105"
+                      >
+                        <Edit3 className="h-4 w-4 mr-2" />
+                        Editar Imagens
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -413,39 +378,33 @@ const Index = () => {
           )}
 
           {currentStep === 'multiEditor' && selectedPhotoType && (
-            <div data-tutorial-target="multi-editor">
-              <MultiImageEditor
-                images={images}
-                photoType={selectedPhotoType}
-                onImageAdjusted={handleImageAdjusted}
-                onBack={goBack}
-                onContinue={proceedToBackgroundRemoval}
-              />
-            </div>
+            <MultiImageEditor
+              images={images}
+              photoType={selectedPhotoType}
+              onImageAdjusted={handleImageAdjusted}
+              onBack={goBack}
+              onContinue={proceedToBackgroundRemoval}
+            />
           )}
 
           {currentStep === 'backgroundRemoval' && (
-            <div data-tutorial-target="background-removal">
-              <BackgroundRemovalStep
-                images={images}
-                onProcessedImageUpload={handleProcessedImageUpload}
-                onBack={goBack}
-                onContinue={proceedToQuantity}
-              />
-            </div>
+            <BackgroundRemovalStep
+              images={images}
+              onProcessedImageUpload={handleProcessedImageUpload}
+              onBack={goBack}
+              onContinue={proceedToQuantity}
+            />
           )}
 
           {currentStep === 'quantity' && selectedPhotoType && (
-            <div data-tutorial-target="quantity-selector">
-              <QuantitySelector
-                images={images}
-                photoType={selectedPhotoType}
-                onQuantityUpdate={handleQuantityUpdate}
-                onBack={goBack}
-                onGeneratePDF={generateDocument}
-                isProcessing={isProcessing}
-              />
-            </div>
+            <QuantitySelector
+              images={images}
+              photoType={selectedPhotoType}
+              onQuantityUpdate={handleQuantityUpdate}
+              onBack={goBack}
+              onGeneratePDF={generateDocument}
+              isProcessing={isProcessing}
+            />
           )}
 
           {currentStep === 'final' && pdfBlob && (
@@ -463,15 +422,13 @@ const Index = () => {
               </div>
 
               <div className="flex justify-center">
-                <div data-tutorial-target="generate-button">
-                  <Button
-                    onClick={downloadPDF}
-                    className="neon-button w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105"
-                  >
-                    <Download className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                    Baixar PDF
-                  </Button>
-                </div>
+                <Button
+                  onClick={downloadPDF}
+                  className="neon-button w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105"
+                >
+                  <Download className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                  Baixar PDF
+                </Button>
               </div>
             </Card>
           )}
@@ -510,14 +467,6 @@ const Index = () => {
           )}
         </div>
       </div>
-
-      {/* Tutorial Component */}
-      <Tutorial
-        isOpen={isTutorialOpen}
-        onClose={closeTutorial}
-        currentStep={currentTutorialStep}
-        onStepComplete={completeTutorialStep}
-      />
     </div>
   );
 };
