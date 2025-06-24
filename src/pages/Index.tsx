@@ -52,10 +52,16 @@ const Index = () => {
     console.log('Opening PhotoRoom...');
     const photoRoomUrl = 'https://www.photoroom.com/pt-br/ferramentas/remover-fundo-de-imagem';
     
+    // Calcular posição centralizada
+    const width = 1000;
+    const height = 700;
+    const left = (window.screen.width / 2) - (width / 2);
+    const top = (window.screen.height / 2) - (height / 2);
+    
     const popup = window.open(
       photoRoomUrl,
       'photoroom',
-      'width=1200,height=800,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no'
+      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no`
     );
     
     if (popup) {

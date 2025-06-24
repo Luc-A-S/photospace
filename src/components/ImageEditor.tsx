@@ -12,7 +12,7 @@ interface ImageEditorProps {
 
 const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [zoom, setZoom] = useState([1]);
+  const [zoom, setZoom] = useState([50]); // Start at 50%
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -28,8 +28,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
     img.onload = () => {
       setImage(img);
       // Centralizar a imagem inicialmente
-      const scale = Math.min(canvasWidth / img.naturalWidth, canvasHeight / img.naturalHeight);
-      setZoom([scale]);
+      const scale = Math.min(canvasWidth / img.naturalWidth, canvasHeight / img.naturalHeight) * 100;
+      setZoom([Math.min(scale, 100)]);
     };
     img.src = imageUrl;
   }, [imageUrl]);
@@ -58,7 +58,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
     // Aplicar transformações
     ctx.translate(canvas.width / 2, canvas.height / 2);
     ctx.rotate((rotation * Math.PI) / 180);
-    ctx.scale(zoom[0], zoom[0]);
+    ctx.scale(zoom[0] / 100, zoom[0] / 100);
     ctx.translate(position.x, position.y);
 
     // Desenhar a imagem centralizada
@@ -73,10 +73,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
     // Restaurar o contexto
     ctx.restore();
 
-    // Adicionar borda preta fina
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+    // Removido o contorno - será adicionado apenas no PDF final
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -109,10 +106,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
         const url = URL.createObjectURL(blob);
         onDownload(url);
         
-        // Também fazer download automático
+        // Download automático com nome específico
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'foto-3x4-ajustada.png';
+        a.download = 'FOTO 3x4.png';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -128,8 +125,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
     setPosition({ x: 0, y: 0 });
     setRotation(0);
     if (image) {
-      const scale = Math.min(canvasWidth / image.naturalWidth, canvasHeight / image.naturalHeight);
-      setZoom([scale]);
+      const scale = Math.min(canvasWidth / image.naturalWidth, canvasHeight / image.naturalHeight) * 100;
+      setZoom([Math.min(scale, 100)]);
     }
   };
 
@@ -176,13 +173,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
             <Slider
               value={zoom}
               onValueChange={setZoom}
-              min={0.1}
-              max={3}
-              step={0.1}
+              min={1}
+              max={100}
+              step={1}
               className="w-full"
             />
             <div className="text-xs text-gray-500 mt-1">
-              {Math.round(zoom[0] * 100)}%
+              {zoom[0]}%
             </div>
           </div>
 
