@@ -33,9 +33,9 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   downloadButtonText
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [zoom, setZoom] = useState([1.5]);
+  const [zoom, setZoom] = useState([2.0]); // Aumentado de 1.5 para 2.0
   
-  const [brightness, setBrightness] = useState([100]);
+  const [brightness, setBrightness] = useState([115]); // Aumentado de 100 para 115
   const [contrast, setContrast] = useState([100]);
   const [highlights, setHighlights] = useState([0]);
   const [shadows, setShadows] = useState([0]);
@@ -180,8 +180,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     const img = new Image();
     img.onload = async () => {
       setImage(img);
-      const scale = Math.min(canvasWidth / img.naturalWidth, canvasHeight / img.naturalHeight) * 2;
-      setZoom([Math.min(scale, 3)]);
+      const scale = Math.min(canvasWidth / img.naturalWidth, canvasHeight / img.naturalHeight) * 2.5; // Aumentado de 2 para 2.5
+      setZoom([Math.min(scale, 4)]); // Aumentado limite máximo de 3 para 4
       
       // Aplicar posicionamento automático apenas uma vez
       if (!autoPositioned) {
@@ -189,9 +189,9 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
         setAutoPositioned(true);
         
         // Aplicar ajustes automáticos de qualidade
-        setBrightness([105]); // Leve aumento de brilho
-        setContrast([110]); // Leve aumento de contraste
-        setSaturation([105]); // Leve aumento de saturação
+        setBrightness([115]); // Aumentado de 105 para 115
+        setContrast([115]); // Aumentado de 110 para 115
+        setSaturation([110]); // Aumentado de 105 para 110
       }
     };
     img.src = imageUrl;
@@ -299,7 +299,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     setPositionX([0]);
     setPositionY([0]);
     setRotation(0);
-    setBrightness([100]);
+    setBrightness([115]); // Alterado de 100 para 115
     setContrast([100]);
     setHighlights([0]);
     setShadows([0]);
@@ -314,8 +314,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     setAutoPositioned(false);
     
     if (image) {
-      const scale = Math.min(canvasWidth / image.naturalWidth, canvasHeight / image.naturalHeight) * 2;
-      setZoom([Math.min(scale, 3)]);
+      const scale = Math.min(canvasWidth / image.naturalWidth, canvasHeight / image.naturalHeight) * 2.5; // Aumentado de 2 para 2.5
+      setZoom([Math.min(scale, 4)]); // Aumentado limite máximo de 3 para 4
     }
   };
 
