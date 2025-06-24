@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -300,8 +299,7 @@ const Index = () => {
                 <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                   <Button
                     onClick={goBackToEditor}
-                    variant="outline"
-                    className="flex items-center gap-2 border-purple-400/30 text-white hover:bg-purple-500/20 w-full sm:w-auto"
+                    className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
                   >
                     <ArrowLeft className="h-4 w-4" />
                     Voltar
@@ -327,8 +325,7 @@ const Index = () => {
                 
                 <Button
                   onClick={handlePhotoRoomUpload}
-                  variant="outline"
-                  className="w-full sm:w-auto border-2 border-blue-400/30 hover:border-blue-500 text-white hover:bg-blue-500/20 px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium transition-all duration-300 hover:scale-105"
+                  className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
                 >
                   <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                   Upload da Imagem Sem Fundo
@@ -354,8 +351,7 @@ const Index = () => {
                 <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                   <Button
                     onClick={goBackToPhotoRoom}
-                    variant="outline"
-                    className="flex items-center gap-2 border-purple-400/30 text-white hover:bg-purple-500/20 w-full sm:w-auto"
+                    className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
                   >
                     <ArrowLeft className="h-4 w-4" />
                     Voltar

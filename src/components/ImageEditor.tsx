@@ -1,8 +1,7 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Download, RotateCw, Move, Sun, Palette, Waves, ArrowLeft } from 'lucide-react';
+import { Download, RotateCw, Move, Sun, Palette, ArrowLeft } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -172,8 +171,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack 
         <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
           <Button
             onClick={onBack}
-            variant="outline"
-            className="flex items-center gap-2 border-purple-400/30 text-white hover:bg-purple-500/20 w-full sm:w-auto"
+            className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
           >
             <ArrowLeft className="h-4 w-4" />
             Voltar
@@ -331,8 +329,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack 
             <div className="flex gap-2 sm:gap-3">
               <Button
                 onClick={rotateImage}
-                variant="outline"
-                className="flex-1 border-purple-400/30 text-white hover:bg-purple-500/20 text-sm sm:text-base"
+                className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
               >
                 <RotateCw className="h-4 w-4 mr-1 sm:mr-2" />
                 Girar 90°
@@ -340,8 +337,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack 
               
               <Button
                 onClick={resetPosition}
-                variant="outline"
-                className="flex-1 border-purple-400/30 text-white hover:bg-purple-500/20 text-sm sm:text-base"
+                className="flex-1 bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
               >
                 <Move className="h-4 w-4 mr-1 sm:mr-2" />
                 Resetar
