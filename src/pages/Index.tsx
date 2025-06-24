@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -256,8 +257,12 @@ const Index = () => {
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
           <div className="flex items-center justify-center mb-4 sm:mb-6">
-            <div className="bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl p-3 shadow-2xl shadow-purple-500/20">
-              <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+            <div className="bg-white rounded-2xl p-3 shadow-2xl">
+              <img 
+                src="/lovable-uploads/a9286ee7-5793-4963-9b72-95cfb16e6374.png" 
+                alt="PhotoSpace Logo"
+                className="h-6 w-6 sm:h-8 sm:w-8"
+              />
             </div>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent mb-2 sm:mb-4 px-4">
