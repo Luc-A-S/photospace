@@ -18,9 +18,9 @@ export const generatePDF = async (imageUrl: string, quantity: number): Promise<B
       const photoWidth = 30;
       const photoHeight = 40;
       
-      // Margins and spacing
+      // Margins and spacing - reduzido o espaçamento
       const margin = 15;
-      const spacing = 8;
+      const spacing = 5; // Reduzido de 8 para 5
       
       // Calculate how many photos can fit per row and column
       const photosPerRow = Math.floor((pageWidth - 2 * margin + spacing) / (photoWidth + spacing));

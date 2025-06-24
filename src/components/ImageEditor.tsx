@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Download, RotateCw, Move, Sun, Palette, Waves } from 'lucide-react';
+import { Download, RotateCw, Move, Sun, Palette, Waves, ArrowLeft } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -10,14 +10,15 @@ import { Label } from '@/components/ui/label';
 interface ImageEditorProps {
   imageUrl: string;
   onDownload: (adjustedImageUrl: string) => void;
+  onBack: () => void;
 }
 
-const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
+const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [zoom, setZoom] = useState([50]); // Start at 50%
-  const [brightness, setBrightness] = useState([100]); // Start at 100% (normal)
   
-  // Iluminação
+  // Iluminação (brilho movido para cá)
+  const [brightness, setBrightness] = useState([100]); // Start at 100% (normal)
   const [contrast, setContrast] = useState([100]);
   const [highlights, setHighlights] = useState([0]);
   const [shadows, setShadows] = useState([0]);
@@ -186,9 +187,20 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
   return (
     <Card className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-0">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-          Ajustar Imagem 3x4
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <Button
+            onClick={onBack}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar
+          </Button>
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Ajustar Imagem 3x4
+          </h2>
+          <div></div>
+        </div>
         <p className="text-gray-600 mb-4">
           Use os controles para posicionar e ajustar sua foto na proporção 3x4
         </p>
@@ -249,23 +261,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Brilho
-            </label>
-            <Slider
-              value={brightness}
-              onValueChange={setBrightness}
-              min={50}
-              max={150}
-              step={1}
-              className="w-full"
-            />
-            <div className="text-xs text-gray-500 mt-1">
-              {brightness[0]}%
-            </div>
-          </div>
-
           {/* Seção Iluminação */}
           <div className="border-t pt-4">
             <div className="flex items-center gap-2 mb-4">
@@ -274,6 +269,23 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
             </div>
             
             <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Brilho
+                </label>
+                <Slider
+                  value={brightness}
+                  onValueChange={setBrightness}
+                  min={50}
+                  max={150}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="text-xs text-gray-500 mt-1">
+                  {brightness[0]}
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Contraste
@@ -287,7 +299,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
                   className="w-full"
                 />
                 <div className="text-xs text-gray-500 mt-1">
-                  {contrast[0]}%
+                  {contrast[0]}
                 </div>
               </div>
 
@@ -410,7 +422,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
                   className="w-full"
                 />
                 <div className="text-xs text-gray-500 mt-1">
-                  {saturation[0]}%
+                  {saturation[0]}
                 </div>
               </div>
             </div>

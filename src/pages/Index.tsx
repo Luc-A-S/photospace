@@ -1,5 +1,6 @@
+
 import React, { useState, useRef } from 'react';
-import { Upload, Download, Loader2, ExternalLink } from 'lucide-react';
+import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Link } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -16,6 +17,8 @@ const Index = () => {
   const [quantity, setQuantity] = useState(4);
   const [isProcessing, setIsProcessing] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [imageUrl, setImageUrl] = useState('');
+  const [isLoadingUrl, setIsLoadingUrl] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const photoRoomUploadRef = useRef<HTMLInputElement>(null);
@@ -32,6 +35,46 @@ const Index = () => {
       title: "Imagem carregada!",
       description: "Agora ajuste a posição da imagem na proporção 3x4."
     });
+  };
+
+  const handleUrlLoad = async () => {
+    if (!imageUrl.trim()) {
+      toast({
+        title: "URL inválida",
+        description: "Por favor, insira uma URL válida.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoadingUrl(true);
+    try {
+      // Verificar se a URL é uma imagem válida
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = imageUrl;
+      });
+
+      setProcessedImage(imageUrl);
+      setCurrentStep('editor');
+      
+      toast({
+        title: "Imagem carregada por URL!",
+        description: "Agora ajuste a posição da imagem na proporção 3x4."
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao carregar URL",
+        description: "Não foi possível carregar a imagem da URL fornecida.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoadingUrl(false);
+    }
   };
 
   const handleUploadClick = () => {
@@ -52,9 +95,9 @@ const Index = () => {
     console.log('Opening PhotoRoom...');
     const photoRoomUrl = 'https://www.photoroom.com/pt-br/ferramentas/remover-fundo-de-imagem';
     
-    // Calcular posição centralizada
-    const width = 1000;
-    const height = 700;
+    // Calcular posição centralizada - janela menor
+    const width = 800;
+    const height = 600;
     const left = (window.screen.width / 2) - (width / 2);
     const top = (window.screen.height / 2) - (height / 2);
     
@@ -148,6 +191,7 @@ const Index = () => {
     setAdjustedImage(null);
     setPdfBlob(null);
     setQuantity(4);
+    setImageUrl('');
     
     if (processedImage) {
       URL.revokeObjectURL(processedImage);
@@ -155,6 +199,24 @@ const Index = () => {
     if (adjustedImage) {
       URL.revokeObjectURL(adjustedImage);
     }
+  };
+
+  const goBackToUpload = () => {
+    setCurrentStep('upload');
+    setProcessedImage(null);
+    setAdjustedImage(null);
+  };
+
+  const goBackToEditor = () => {
+    setCurrentStep('editor');
+  };
+
+  const goBackToPhotoRoom = () => {
+    setCurrentStep('photoroom');
+  };
+
+  const goBackToQuantity = () => {
+    setCurrentStep('quantity');
   };
 
   return (
@@ -188,7 +250,7 @@ const Index = () => {
                 </p>
               </div>
               
-              <div className="flex justify-center">
+              <div className="flex flex-col items-center gap-6">
                 <Button
                   onClick={handleUploadClick}
                   className="h-32 w-64 bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-2xl flex flex-col items-center justify-center gap-3 shadow-lg transition-all duration-300 hover:scale-105"
@@ -196,6 +258,35 @@ const Index = () => {
                   <Upload className="h-8 w-8" />
                   <span className="text-lg font-medium">Fazer Upload</span>
                 </Button>
+
+                <div className="text-gray-500 font-medium">OU</div>
+
+                <div className="w-full max-w-md space-y-4">
+                  <Label htmlFor="image-url" className="text-lg font-medium text-gray-700">
+                    Carregar por URL
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="image-url"
+                      type="url"
+                      placeholder="https://exemplo.com/imagem.jpg"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      className="flex-1 rounded-xl border-2 border-gray-200 focus:border-blue-500"
+                    />
+                    <Button
+                      onClick={handleUrlLoad}
+                      disabled={isLoadingUrl || !imageUrl.trim()}
+                      className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white rounded-xl px-6"
+                    >
+                      {isLoadingUrl ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Link className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </div>
               
               <input
@@ -215,15 +306,27 @@ const Index = () => {
             <ImageEditor
               imageUrl={processedImage}
               onDownload={handleImageAdjusted}
+              onBack={goBackToUpload}
             />
           )}
 
           {currentStep === 'photoroom' && adjustedImage && (
             <Card className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-0">
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                  Remover Fundo no PhotoRoom
-                </h2>
+                <div className="flex items-center justify-between mb-4">
+                  <Button
+                    onClick={goBackToEditor}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Voltar
+                  </Button>
+                  <h2 className="text-2xl font-semibold text-gray-800">
+                    Remover Fundo no PhotoRoom
+                  </h2>
+                  <div></div>
+                </div>
                 <p className="text-gray-600 mb-6">
                   Sua imagem 3x4 já foi baixada. Agora use o PhotoRoom para remover o fundo e depois faça upload da imagem processada.
                 </p>
@@ -264,9 +367,20 @@ const Index = () => {
           {currentStep === 'quantity' && processedImage && (
             <Card className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-0">
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                  Imagem Final (3x4 sem fundo)
-                </h2>
+                <div className="flex items-center justify-between mb-4">
+                  <Button
+                    onClick={goBackToPhotoRoom}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Voltar
+                  </Button>
+                  <h2 className="text-2xl font-semibold text-gray-800">
+                    Imagem Final (3x4 sem fundo)
+                  </h2>
+                  <div></div>
+                </div>
                 <div className="flex justify-center mb-6">
                   <div className="bg-white rounded-2xl p-4 shadow-lg">
                     <img
