@@ -1,5 +1,6 @@
+
 import React, { useState, useRef } from 'react';
-import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Link, Image } from 'lucide-react';
+import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Link } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -13,7 +14,7 @@ const Index = () => {
   const [originalImage, setOriginalImage] = useState<File | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [adjustedImage, setAdjustedImage] = useState<string | null>(null);
-  const [quantity, setQuantity] = useState(2);
+  const [quantity, setQuantity] = useState(4);
   const [isProcessing, setIsProcessing] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [imageUrl, setImageUrl] = useState('');
@@ -73,29 +74,6 @@ const Index = () => {
       });
     } finally {
       setIsLoadingUrl(false);
-    }
-  };
-
-  const handlePaste = async (e: React.ClipboardEvent) => {
-    const items = e.clipboardData?.items;
-    if (!items) return;
-
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      if (item.type.indexOf('image') !== -1) {
-        const file = item.getAsFile();
-        if (file) {
-          handleFileSelect(file);
-          return;
-        }
-      }
-    }
-
-    // Check for URLs in clipboard text
-    const text = e.clipboardData?.getData('text');
-    if (text && (text.startsWith('http') || text.startsWith('data:image'))) {
-      setImageUrl(text);
-      await handleUrlLoad();
     }
   };
 
@@ -212,7 +190,7 @@ const Index = () => {
     setProcessedImage(null);
     setAdjustedImage(null);
     setPdfBlob(null);
-    setQuantity(2);
+    setQuantity(4);
     setImageUrl('');
     
     if (processedImage) {
@@ -242,76 +220,72 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <div className="container mx-auto px-4 py-4 md:py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="text-center mb-8 md:mb-12">
+        <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
-            <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-3 shadow-lg">
-              <Upload className="h-6 w-6 md:h-8 md:w-8 text-white" />
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-3 shadow-lg">
+              <Upload className="h-8 w-8 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
             📸 Foto 3x4 Sem Fundo
           </h1>
-          <p className="text-base md:text-lg text-gray-300 max-w-2xl mx-auto px-4">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             PDF Pronto para Imprimir - Faça upload da sua foto, ajuste manualmente, use o PhotoRoom para remover o fundo e gere múltiplas cópias
           </p>
         </div>
 
         {/* Main Content */}
-        <div className="max-w-4xl mx-auto px-2 md:px-0">
+        <div className="max-w-4xl mx-auto">
           {currentStep === 'upload' && (
-            <Card className="bg-slate-800/60 backdrop-blur-sm rounded-3xl p-4 md:p-8 shadow-2xl border border-purple-500/20">
-              <div className="text-center mb-6 md:mb-8">
-                <h2 className="text-xl md:text-2xl font-semibold text-white mb-4">
+            <Card className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-0">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">
                   Faça Upload da sua Imagem
                 </h2>
-                <p className="text-gray-300 text-sm md:text-base">
+                <p className="text-gray-600">
                   Escolha uma foto para começar o processo
                 </p>
               </div>
               
-              <div className="flex flex-col items-center gap-4 md:gap-6">
+              <div className="flex flex-col items-center gap-6">
                 <Button
                   onClick={handleUploadClick}
-                  className="h-24 md:h-32 w-full max-w-xs md:w-64 bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-2xl flex flex-col items-center justify-center gap-2 md:gap-3 shadow-lg transition-all duration-300 hover:scale-105"
+                  className="h-32 w-64 bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-2xl flex flex-col items-center justify-center gap-3 shadow-lg transition-all duration-300 hover:scale-105"
                 >
-                  <Upload className="h-6 w-6 md:h-8 md:w-8" />
-                  <span className="text-base md:text-lg font-medium">Fazer Upload</span>
+                  <Upload className="h-8 w-8" />
+                  <span className="text-lg font-medium">Fazer Upload</span>
                 </Button>
 
-                <div className="text-gray-400 font-medium text-sm md:text-base">OU</div>
+                <div className="text-gray-500 font-medium">OU</div>
 
                 <div className="w-full max-w-md space-y-4">
-                  <Label htmlFor="image-url" className="text-base md:text-lg font-medium text-white">
-                    Carregar por URL ou Colar Imagem
+                  <Label htmlFor="image-url" className="text-lg font-medium text-gray-700">
+                    Carregar por URL
                   </Label>
-                  <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex gap-2">
                     <Input
                       id="image-url"
                       type="url"
-                      placeholder="Cole uma URL ou Ctrl+V para colar imagem"
+                      placeholder="https://exemplo.com/imagem.jpg"
                       value={imageUrl}
                       onChange={(e) => setImageUrl(e.target.value)}
-                      onPaste={handlePaste}
-                      className="flex-1 rounded-xl border-2 border-purple-500/30 bg-slate-700/50 text-white placeholder-gray-400 focus:border-purple-400"
+                      className="flex-1 rounded-xl border-2 border-gray-200 focus:border-blue-500"
                     />
                     <Button
                       onClick={handleUrlLoad}
                       disabled={isLoadingUrl || !imageUrl.trim()}
-                      className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-xl px-4 md:px-6"
+                      className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white rounded-xl px-6"
                     >
                       {isLoadingUrl ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <Image className="h-4 w-4" />
+                        <Link className="h-4 w-4" />
                       )}
                     </Button>
                   </div>
-                  <p className="text-xs md:text-sm text-gray-400 text-center">
-                    💡 Dica: Você pode copiar uma imagem (Ctrl+C) e colar aqui (Ctrl+V)
-                  </p>
                 </div>
               </div>
               
@@ -337,23 +311,23 @@ const Index = () => {
           )}
 
           {currentStep === 'photoroom' && adjustedImage && (
-            <Card className="bg-slate-800/60 backdrop-blur-sm rounded-3xl p-4 md:p-8 shadow-2xl border border-purple-500/20">
-              <div className="text-center mb-6 md:mb-8">
-                <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+            <Card className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-0">
+              <div className="text-center mb-8">
+                <div className="flex items-center justify-between mb-4">
                   <Button
                     onClick={goBackToEditor}
                     variant="outline"
-                    className="flex items-center gap-2 border-purple-500/30 text-white hover:bg-purple-500/20 order-2 sm:order-1"
+                    className="flex items-center gap-2"
                   >
                     <ArrowLeft className="h-4 w-4" />
                     Voltar
                   </Button>
-                  <h2 className="text-xl md:text-2xl font-semibold text-white order-1 sm:order-2">
+                  <h2 className="text-2xl font-semibold text-gray-800">
                     Remover Fundo no PhotoRoom
                   </h2>
-                  <div className="order-3 hidden sm:block"></div>
+                  <div></div>
                 </div>
-                <p className="text-gray-300 mb-6 text-sm md:text-base px-2">
+                <p className="text-gray-600 mb-6">
                   Sua imagem 3x4 já foi baixada. Agora use o PhotoRoom para remover o fundo e depois faça upload da imagem processada.
                 </p>
               </div>
@@ -361,7 +335,7 @@ const Index = () => {
               <div className="flex flex-col gap-4 items-center">
                 <Button
                   onClick={openPhotoRoom}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 md:px-8 py-3 rounded-xl text-base md:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 w-full max-w-xs"
+                  className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-8 py-3 rounded-xl text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105"
                 >
                   <ExternalLink className="h-5 w-5 mr-2" />
                   Abrir PhotoRoom
@@ -370,7 +344,7 @@ const Index = () => {
                 <Button
                   onClick={handlePhotoRoomUpload}
                   variant="outline"
-                  className="border-2 border-purple-400/50 hover:border-purple-400 text-white hover:bg-purple-500/20 px-6 md:px-8 py-3 rounded-xl text-base md:text-lg font-medium transition-all duration-300 hover:scale-105 w-full max-w-xs"
+                  className="border-2 border-blue-300 hover:border-blue-500 px-8 py-3 rounded-xl text-lg font-medium transition-all duration-300 hover:scale-105"
                 >
                   <Upload className="h-5 w-5 mr-2" />
                   Upload da Imagem Sem Fundo
@@ -391,38 +365,38 @@ const Index = () => {
           )}
 
           {currentStep === 'quantity' && processedImage && (
-            <Card className="bg-slate-800/60 backdrop-blur-sm rounded-3xl p-4 md:p-8 shadow-2xl border border-purple-500/20">
-              <div className="text-center mb-6 md:mb-8">
-                <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+            <Card className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-0">
+              <div className="text-center mb-8">
+                <div className="flex items-center justify-between mb-4">
                   <Button
                     onClick={goBackToPhotoRoom}
                     variant="outline"
-                    className="flex items-center gap-2 border-purple-500/30 text-white hover:bg-purple-500/20 order-2 sm:order-1"
+                    className="flex items-center gap-2"
                   >
                     <ArrowLeft className="h-4 w-4" />
                     Voltar
                   </Button>
-                  <h2 className="text-xl md:text-2xl font-semibold text-white order-1 sm:order-2">
+                  <h2 className="text-2xl font-semibold text-gray-800">
                     Imagem Final (3x4 sem fundo)
                   </h2>
-                  <div className="order-3 hidden sm:block"></div>
+                  <div></div>
                 </div>
                 <div className="flex justify-center mb-6">
                   <div className="bg-white rounded-2xl p-4 shadow-lg">
                     <img
                       src={processedImage}
                       alt="Processed"
-                      className="w-24 h-32 md:w-32 md:h-42 object-cover rounded-xl"
+                      className="w-32 h-42 object-cover rounded-xl"
                     />
                   </div>
                 </div>
-                <p className="text-sm text-gray-400 mb-4">
+                <p className="text-sm text-gray-500 mb-4">
                   Foto 3x4 sem fundo, pronta para gerar o PDF
                 </p>
               </div>
 
-              <div className="max-w-md mx-auto mb-6 md:mb-8">
-                <Label htmlFor="quantity" className="text-base md:text-lg font-medium text-white mb-3 block">
+              <div className="max-w-md mx-auto mb-8">
+                <Label htmlFor="quantity" className="text-lg font-medium text-gray-700 mb-3 block">
                   Quantas fotos deseja gerar?
                 </Label>
                 <Input
@@ -432,7 +406,7 @@ const Index = () => {
                   max="50"
                   value={quantity}
                   onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                  className="text-center text-lg rounded-xl py-3 border-2 border-purple-500/30 bg-slate-700/50 text-white focus:border-purple-400"
+                  className="text-center text-lg rounded-xl py-3 border-2 border-gray-200 focus:border-blue-500"
                 />
               </div>
 
@@ -440,7 +414,7 @@ const Index = () => {
                 <Button
                   onClick={generateDocument}
                   disabled={isProcessing}
-                  className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 md:px-8 py-3 rounded-xl text-base md:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 w-full max-w-xs"
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105"
                 >
                   {isProcessing ? (
                     <>
@@ -459,15 +433,15 @@ const Index = () => {
           )}
 
           {currentStep === 'final' && pdfBlob && (
-            <Card className="bg-slate-800/60 backdrop-blur-sm rounded-3xl p-4 md:p-8 shadow-2xl border border-purple-500/20 text-center">
-              <div className="mb-6 md:mb-8">
-                <div className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-full p-4 w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 flex items-center justify-center">
-                  <Download className="h-6 w-6 md:h-8 md:w-8 text-white" />
+            <Card className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-0 text-center">
+              <div className="mb-8">
+                <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <Download className="h-8 w-8 text-white" />
                 </div>
-                <h2 className="text-xl md:text-2xl font-semibold text-white mb-2">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-2">
                   PDF Pronto!
                 </h2>
-                <p className="text-gray-300 text-sm md:text-base">
+                <p className="text-gray-600">
                   {quantity} fotos 3x4 com contornos pretos para fácil recorte
                 </p>
               </div>
@@ -475,7 +449,7 @@ const Index = () => {
               <div className="flex justify-center mb-6">
                 <Button
                   onClick={downloadPDF}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 w-full max-w-xs"
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105"
                 >
                   <Download className="h-5 w-5 mr-2" />
                   Baixar PDF
@@ -485,7 +459,7 @@ const Index = () => {
               <Button
                 onClick={resetApp}
                 variant="ghost"
-                className="text-gray-400 hover:text-white rounded-xl"
+                className="text-gray-500 hover:text-gray-700 rounded-xl"
               >
                 Criar Novo PDF
               </Button>
