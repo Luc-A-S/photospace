@@ -216,6 +216,10 @@ const Index = () => {
     setAdjustedImage(null);
   };
 
+  const goBackToUpload = () => {
+    setCurrentStep('upload');
+  };
+
   const goBackToEditor = () => {
     setCurrentStep('editor');
   };
@@ -369,7 +373,7 @@ const Index = () => {
               <div className="flex flex-col gap-4 items-center">
                 <Button
                   onClick={openPhotoRoom}
-                  className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105"
+                  className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 border border-purple-400/30"
                 >
                   <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                   Abrir PhotoRoom
