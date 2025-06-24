@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -55,7 +54,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
         <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
           <Button
             onClick={onBack}
-            className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
+            className="neon-button flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
           >
             <ArrowLeft className="h-4 w-4" />
             Voltar
@@ -164,7 +163,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
         <Button
           onClick={onGeneratePDF}
           disabled={isProcessing || totalPhotos === 0}
-          className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-4 rounded-xl text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105"
+          className="neon-button w-full sm:w-auto bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-4 rounded-xl text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105"
         >
           {isProcessing ? (
             <>

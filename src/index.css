@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -100,4 +101,98 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Neon Button Animation */
+@keyframes neon-trace-1 {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  25% {
+    transform: translate(100%, 0);
+  }
+  50% {
+    transform: translate(100%, 100%);
+  }
+  75% {
+    transform: translate(0, 100%);
+  }
+  95% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes neon-trace-2 {
+  0% {
+    transform: translate(100%, 100%);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  25% {
+    transform: translate(0, 100%);
+  }
+  50% {
+    transform: translate(0, 0);
+  }
+  75% {
+    transform: translate(100%, 0);
+  }
+  95% {
+    transform: translate(100%, 100%);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(100%, 100%);
+    opacity: 0;
+  }
+}
+
+.neon-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.neon-button::before,
+.neon-button::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
+  box-shadow: 
+    0 0 6px rgba(255, 255, 255, 0.8),
+    0 0 12px rgba(255, 255, 255, 0.6),
+    0 0 18px rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.neon-button:hover::before {
+  animation: neon-trace-1 2s linear infinite;
+}
+
+.neon-button:hover::after {
+  animation: neon-trace-2 2s linear infinite 0.5s;
+}
+
+.neon-button::before {
+  top: 0;
+  left: 0;
+}
+
+.neon-button::after {
+  bottom: 0;
+  right: 0;
 }

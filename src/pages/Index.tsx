@@ -421,23 +421,15 @@ const Index = () => {
                 </p>
               </div>
 
-              <div className="flex justify-center mb-6">
+              <div className="flex justify-center">
                 <Button
                   onClick={downloadPDF}
-                  className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105"
+                  className="neon-button w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105"
                 >
                   <Download className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                   Baixar PDF
                 </Button>
               </div>
-
-              <Button
-                onClick={resetApp}
-                variant="ghost"
-                className="text-gray-400 hover:text-white rounded-xl"
-              >
-                Criar Novo PDF
-              </Button>
             </Card>
           )}
 

@@ -68,7 +68,7 @@ const BackgroundRemovalStep: React.FC<BackgroundRemovalStepProps> = ({
         <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
           <Button
             onClick={onBack}
-            className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
+            className="neon-button flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
           >
             <ArrowLeft className="h-4 w-4" />
             Voltar
@@ -84,7 +84,7 @@ const BackgroundRemovalStep: React.FC<BackgroundRemovalStepProps> = ({
           <Button
             onClick={onContinue}
             disabled={!allProcessed}
-            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-500 disabled:to-gray-600 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
+            className="neon-button bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-500 disabled:to-gray-600 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
           >
             Definir Quantidade
             <ArrowRight className="h-4 w-4 ml-2" />
@@ -110,7 +110,7 @@ const BackgroundRemovalStep: React.FC<BackgroundRemovalStepProps> = ({
       <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
         <Button
           onClick={openPhotoRoom}
-          className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 border border-purple-400/30"
+          className="neon-button bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 border border-purple-400/30"
         >
           <ExternalLink className="h-4 w-4 mr-2" />
           Abrir PhotoRoom
@@ -118,7 +118,7 @@ const BackgroundRemovalStep: React.FC<BackgroundRemovalStepProps> = ({
         
         <Button
           onClick={openRemoveBg}
-          className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 border border-purple-400/30"
+          className="neon-button bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 border border-purple-400/30"
         >
           <ExternalLink className="h-4 w-4 mr-2" />
           Abrir Remove.bg
