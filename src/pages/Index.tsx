@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,15 +15,17 @@ interface PhotoType {
   name: string;
   dimensions: string;
   description: string;
+  width: number; // in mm
+  height: number; // in mm
 }
 
 const Index = () => {
-  const [currentStep, setCurrentStep] = useState<'photoType' | 'upload' | 'editor' | 'photoroom' | 'quantity' | 'final'>('photoType');
+  const [currentStep, setCurrentStep] = useState<'photoType' | 'editor' | 'photoroom' | 'quantity' | 'final'>('photoType');
   const [selectedPhotoType, setSelectedPhotoType] = useState<PhotoType | null>(null);
   const [originalImage, setOriginalImage] = useState<File | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [adjustedImage, setAdjustedImage] = useState<string | null>(null);
-  const [quantity, setQuantity] = useState(2); // Mudado para 2
+  const [quantity, setQuantity] = useState(2);
   const [isProcessing, setIsProcessing] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [isLoadingPaste, setIsLoadingPaste] = useState(false);
@@ -32,12 +35,32 @@ const Index = () => {
 
   const handlePhotoTypeSelect = (photoType: PhotoType) => {
     console.log('Photo type selected:', photoType);
-    setSelectedPhotoType(photoType);
-    setCurrentStep('upload');
+    
+    // Add width and height in mm based on the selected type
+    const photoTypeWithDimensions = {
+      ...photoType,
+      width: photoType.id === '3x4' ? 30 : 
+             photoType.id === '5x7' ? 50 :
+             photoType.id === '2x2' ? 20 :
+             photoType.id === '3.5x4.5' ? 35 :
+             photoType.id === '4x5' ? 40 :
+             photoType.id === '2.5x3' ? 25 : 30,
+      height: photoType.id === '3x4' ? 40 : 
+              photoType.id === '5x7' ? 70 :
+              photoType.id === '2x2' ? 20 :
+              photoType.id === '3.5x4.5' ? 45 :
+              photoType.id === '4x5' ? 50 :
+              photoType.id === '2.5x3' ? 30 : 40
+    };
+    
+    setSelectedPhotoType(photoTypeWithDimensions);
+    
+    // Show file input dialog immediately
+    fileInputRef.current?.click();
     
     toast({
       title: `${photoType.name} selecionada!`,
-      description: `Agora faça upload da sua imagem para criar fotos ${photoType.dimensions}.`
+      description: `Escolha sua imagem para criar fotos ${photoType.dimensions}.`
     });
   };
 
@@ -51,7 +74,7 @@ const Index = () => {
     
     toast({
       title: "Imagem carregada!",
-      description: "Agora ajuste a posição da imagem na proporção 3x4."
+      description: `Agora ajuste a posição da imagem na proporção ${selectedPhotoType?.dimensions}.`
     });
   };
 
@@ -85,10 +108,6 @@ const Index = () => {
     } finally {
       setIsLoadingPaste(false);
     }
-  };
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
   };
 
   const handleImageAdjusted = (adjustedImageUrl: string) => {
@@ -148,18 +167,18 @@ const Index = () => {
   };
 
   const generateDocument = async () => {
-    if (!processedImage) return;
+    if (!processedImage || !selectedPhotoType) return;
     
     setIsProcessing(true);
     try {
       console.log('Generating PDF...');
-      const pdf = await generatePDF(processedImage, quantity);
+      const pdf = await generatePDF(processedImage, quantity, selectedPhotoType.width, selectedPhotoType.height);
       setPdfBlob(pdf);
       setCurrentStep('final');
       
       toast({
         title: "PDF gerado!",
-        description: `${quantity} fotos 3x4 organizadas com contornos para recorte.`
+        description: `${quantity} ${selectedPhotoType.name} organizadas com contornos para recorte.`
       });
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -174,12 +193,12 @@ const Index = () => {
   };
 
   const downloadPDF = () => {
-    if (pdfBlob) {
+    if (pdfBlob && selectedPhotoType) {
       console.log('Downloading PDF...');
       const url = URL.createObjectURL(pdfBlob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'FOTO 3X4 [PDF].pdf';
+      a.download = `${selectedPhotoType.name.toUpperCase()} [PDF].pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -214,10 +233,6 @@ const Index = () => {
     setCurrentStep('photoType');
     setProcessedImage(null);
     setAdjustedImage(null);
-  };
-
-  const goBackToUpload = () => {
-    setCurrentStep('upload');
   };
 
   const goBackToEditor = () => {
@@ -260,67 +275,10 @@ const Index = () => {
         {/* Main Content */}
         <div className="max-w-4xl mx-auto px-2 sm:px-0">
           {currentStep === 'photoType' && (
-            <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
-          )}
-
-          {currentStep === 'upload' && (
-            <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-4 sm:p-8 shadow-2xl border border-purple-500/20">
-              <div className="text-center mb-6 sm:mb-8">
-                <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
-                  <Button
-                    onClick={goBackToPhotoType}
-                    className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Voltar
-                  </Button>
-                  <div className="text-center">
-                    <h2 className="text-xl sm:text-2xl font-semibold text-white mb-2">
-                      Faça Upload da sua Imagem
-                    </h2>
-                    {selectedPhotoType && (
-                      <div className="text-sm text-purple-300 bg-purple-500/20 rounded-lg px-3 py-1 inline-block">
-                        {selectedPhotoType.name} ({selectedPhotoType.dimensions})
-                      </div>
-                    )}
-                  </div>
-                  <div className="hidden sm:block"></div>
-                </div>
-                <p className="text-gray-300 text-sm sm:text-base">
-                  Escolha uma foto para começar o processo
-                </p>
-              </div>
+            <div>
+              <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
               
-              <div className="flex flex-col items-center gap-4 sm:gap-6">
-                <Button
-                  onClick={handleUploadClick}
-                  className="h-24 sm:h-32 w-full sm:w-64 bg-gradient-to-br from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white rounded-2xl flex flex-col items-center justify-center gap-2 sm:gap-3 shadow-lg transition-all duration-300 hover:scale-105 border border-purple-400/30"
-                >
-                  <Upload className="h-6 w-6 sm:h-8 sm:w-8" />
-                  <span className="text-base sm:text-lg font-medium">Fazer Upload</span>
-                </Button>
-
-                <div className="text-gray-400 font-medium text-sm sm:text-base">OU</div>
-
-                <div className="w-full max-w-md">
-                  <Button
-                    onClick={handlePasteImage}
-                    disabled={isLoadingPaste}
-                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 border border-emerald-400/30"
-                  >
-                    {isLoadingPaste ? (
-                      <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin mr-2" />
-                    ) : (
-                      <Clipboard className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                    )}
-                    Colar Imagem Copiada
-                  </Button>
-                  <p className="text-xs sm:text-sm text-gray-400 text-center mt-2">
-                    Copie uma imagem e clique aqui
-                  </p>
-                </div>
-              </div>
-              
+              {/* Hidden file input */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -331,14 +289,15 @@ const Index = () => {
                 }}
                 className="hidden"
               />
-            </Card>
+            </div>
           )}
 
-          {currentStep === 'editor' && processedImage && (
+          {currentStep === 'editor' && processedImage && selectedPhotoType && (
             <ImageEditor
               imageUrl={processedImage}
               onDownload={handleImageAdjusted}
-              onBack={goBackToUpload}
+              onBack={goBackToPhotoType}
+              photoType={selectedPhotoType}
             />
           )}
 

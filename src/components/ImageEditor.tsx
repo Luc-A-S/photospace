@@ -6,15 +6,25 @@ import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
+interface PhotoType {
+  id: string;
+  name: string;
+  dimensions: string;
+  description: string;
+  width: number;
+  height: number;
+}
+
 interface ImageEditorProps {
   imageUrl: string;
   onDownload: (adjustedImageUrl: string) => void;
   onBack: () => void;
+  photoType: PhotoType;
 }
 
-const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack }) => {
+const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack, photoType }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [zoom, setZoom] = useState([1.5]); // Removido a porcentagem, agora é multiplicador
+  const [zoom, setZoom] = useState([1.5]);
   
   // Iluminação
   const [brightness, setBrightness] = useState([100]);
@@ -40,8 +50,15 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack 
   const [rotation, setRotation] = useState(0);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
 
-  const canvasWidth = 354;
-  const canvasHeight = 472;
+  // Calculate canvas size based on photo type aspect ratio, keeping consistent display size
+  const aspectRatio = photoType.width / photoType.height;
+  const displayHeight = 266; // Keep consistent height
+  const displayWidth = displayHeight * aspectRatio;
+  
+  // Use multiplier for actual canvas resolution for better quality
+  const canvasMultiplier = Math.max(1, Math.min(2, 400 / Math.max(displayWidth, displayHeight)));
+  const canvasWidth = displayWidth * canvasMultiplier;
+  const canvasHeight = displayHeight * canvasMultiplier;
 
   useEffect(() => {
     const img = new Image();
@@ -51,7 +68,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack 
       setZoom([Math.min(scale, 3)]);
     };
     img.src = imageUrl;
-  }, [imageUrl]);
+  }, [imageUrl, canvasWidth, canvasHeight]);
 
   useEffect(() => {
     if (image && canvasRef.current) {
@@ -74,7 +91,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack 
 
     ctx.translate(canvas.width / 2, canvas.height / 2);
     ctx.rotate((rotation * Math.PI) / 180);
-    ctx.scale(zoom[0], zoom[0]); // Usando multiplicador direto
+    ctx.scale(zoom[0], zoom[0]);
     ctx.translate(position.x, position.y);
 
     let filters = [];
@@ -131,7 +148,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack 
         
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'FOTO 3x4.png';
+        a.download = `${photoType.name}.png`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -176,13 +193,18 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack 
             <ArrowLeft className="h-4 w-4" />
             Voltar
           </Button>
-          <h2 className="text-xl sm:text-2xl font-semibold text-white text-center sm:text-left">
-            Ajustar Imagem 3x4
-          </h2>
+          <div className="text-center">
+            <h2 className="text-xl sm:text-2xl font-semibold text-white text-center sm:text-left">
+              Ajustar {photoType.name}
+            </h2>
+            <div className="text-sm text-purple-300 bg-purple-500/20 rounded-lg px-3 py-1 inline-block mt-2">
+              {photoType.dimensions}
+            </div>
+          </div>
           <div className="hidden sm:block"></div>
         </div>
         <p className="text-gray-300 mb-4 text-sm sm:text-base px-2">
-          Use os controles para posicionar e ajustar sua foto na proporção 3x4
+          Use os controles para posicionar e ajustar sua foto na proporção {photoType.dimensions}
         </p>
       </div>
 
@@ -194,8 +216,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack 
               ref={canvasRef}
               className="border-2 border-purple-400/30 rounded-xl cursor-move"
               style={{
-                width: '200px',
-                height: '266px',
+                width: `${displayWidth}px`,
+                height: `${displayHeight}px`,
                 imageRendering: 'auto'
               }}
               onMouseDown={(e) => {
@@ -349,7 +371,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack 
               className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
             >
               <Download className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-              Baixar Imagem Ajustada
+              Baixar {photoType.name} Ajustada
             </Button>
 
             <p className="text-xs sm:text-sm text-gray-400 text-center px-2">

@@ -1,7 +1,7 @@
 
 import jsPDF from 'jspdf';
 
-export const generatePDF = async (imageUrl: string, quantity: number): Promise<Blob> => {
+export const generatePDF = async (imageUrl: string, quantity: number, photoWidth: number, photoHeight: number): Promise<Blob> => {
   return new Promise((resolve, reject) => {
     try {
       const pdf = new jsPDF({
@@ -14,13 +14,9 @@ export const generatePDF = async (imageUrl: string, quantity: number): Promise<B
       const pageWidth = 210;
       const pageHeight = 297;
       
-      // Photo dimensions in mm (3x4 cm)
-      const photoWidth = 30;
-      const photoHeight = 40;
-      
-      // Margins and spacing - reduzido o espaçamento
+      // Margins and spacing
       const margin = 15;
-      const spacing = 5; // Reduzido de 8 para 5
+      const spacing = 5;
       
       // Calculate how many photos can fit per row and column
       const photosPerRow = Math.floor((pageWidth - 2 * margin + spacing) / (photoWidth + spacing));
@@ -87,7 +83,7 @@ export const generatePDF = async (imageUrl: string, quantity: number): Promise<B
           pdf.setFontSize(8);
           pdf.setTextColor(100, 100, 100);
           pdf.text(
-            `Página ${page}/${totalPages} - ${quantity} fotos 3x4 - Recorte nas linhas pretas`,
+            `Página ${page}/${totalPages} - ${quantity} fotos ${photoWidth}x${photoHeight}mm - Recorte nas linhas pretas`,
             pageWidth / 2,
             pageHeight - 5,
             { align: 'center' }
