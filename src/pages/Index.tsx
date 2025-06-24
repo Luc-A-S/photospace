@@ -262,7 +262,7 @@ const Index = () => {
             </div>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent mb-2 sm:mb-4 px-4">
-            📸 Gerador de Fotos
+            PhotoSpace
           </h1>
           <p className="text-sm sm:text-lg text-gray-300 max-w-2xl mx-auto px-4 leading-relaxed">
             {selectedPhotoType ? 
@@ -312,8 +312,8 @@ const Index = () => {
                     <ArrowLeft className="h-4 w-4" />
                     Voltar
                   </Button>
-                  <div className="text-center">
-                    <h2 className="text-xl sm:text-2xl font-semibold text-white text-center sm:text-left">
+                  <div className="text-center flex-1">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-white text-center">
                       Remover Fundo no PhotoRoom
                     </h2>
                     {selectedPhotoType && (
@@ -322,7 +322,7 @@ const Index = () => {
                       </div>
                     )}
                   </div>
-                  <div className="hidden sm:block"></div>
+                  <div className="hidden sm:block w-[100px]"></div>
                 </div>
                 <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base px-2">
                   Sua imagem {selectedPhotoType?.name || ''} já foi baixada. Agora use o PhotoRoom para remover o fundo e depois faça upload da imagem processada.
@@ -371,8 +371,8 @@ const Index = () => {
                     <ArrowLeft className="h-4 w-4" />
                     Voltar
                   </Button>
-                  <div className="text-center">
-                    <h2 className="text-xl sm:text-2xl font-semibold text-white text-center sm:text-left">
+                  <div className="text-center flex-1">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-white text-center">
                       Imagem Final ({selectedPhotoType?.name || ''} sem fundo)
                     </h2>
                     {selectedPhotoType && (
@@ -381,7 +381,7 @@ const Index = () => {
                       </div>
                     )}
                   </div>
-                  <div className="hidden sm:block"></div>
+                  <div className="hidden sm:block w-[100px]"></div>
                 </div>
                 <div className="flex justify-center mb-4 sm:mb-6">
                   <div className="bg-slate-700/50 rounded-2xl p-4 shadow-xl">

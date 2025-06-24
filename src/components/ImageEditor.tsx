@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -45,6 +46,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
   const [vignette, setVignette] = useState([0]);
   
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [positionX, setPositionX] = useState([0]);
+  const [positionY, setPositionY] = useState([0]);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState(0);
@@ -69,6 +72,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
     };
     img.src = imageUrl;
   }, [imageUrl, canvasWidth, canvasHeight]);
+
+  useEffect(() => {
+    setPosition({ x: positionX[0], y: positionY[0] });
+  }, [positionX, positionY]);
 
   useEffect(() => {
     if (image && canvasRef.current) {
@@ -127,10 +134,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging) return;
     
-    setPosition({
+    const newPosition = {
       x: e.clientX - dragStart.x,
       y: e.clientY - dragStart.y
-    });
+    };
+    setPosition(newPosition);
+    setPositionX([newPosition.x]);
+    setPositionY([newPosition.y]);
   };
 
   const handleMouseUp = () => {
@@ -162,6 +172,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
 
   const resetPosition = () => {
     setPosition({ x: 0, y: 0 });
+    setPositionX([0]);
+    setPositionY([0]);
     setRotation(0);
     setBrightness([100]);
     setContrast([100]);
@@ -193,15 +205,15 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
             <ArrowLeft className="h-4 w-4" />
             Voltar
           </Button>
-          <div className="text-center">
-            <h2 className="text-xl sm:text-2xl font-semibold text-white text-center sm:text-left">
+          <div className="text-center flex-1">
+            <h2 className="text-xl sm:text-2xl font-semibold text-white text-center">
               Ajustar {photoType.name}
             </h2>
             <div className="text-sm text-purple-300 bg-purple-500/20 rounded-lg px-3 py-1 inline-block mt-2">
               {photoType.dimensions}
             </div>
           </div>
-          <div className="hidden sm:block"></div>
+          <div className="hidden sm:block w-[100px]"></div>
         </div>
         <p className="text-gray-300 mb-4 text-sm sm:text-base px-2">
           Use os controles para posicionar e ajustar sua foto na proporção {photoType.dimensions}
@@ -210,8 +222,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
 
       <div className="flex flex-col lg:flex-row gap-4 sm:gap-8 items-start">
         {/* Canvas Preview */}
-        <div className="flex-shrink-0 w-full lg:w-auto flex justify-center">
-          <div className="bg-slate-700/50 rounded-2xl p-3 sm:p-4 shadow-xl">
+        <div className="flex-shrink-0 w-full lg:w-auto flex flex-col items-center">
+          <div className="bg-slate-700/50 rounded-2xl p-3 sm:p-4 shadow-xl mb-4">
             <canvas
               ref={canvasRef}
               className="border-2 border-purple-400/30 rounded-xl cursor-move"
@@ -229,15 +241,27 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
               }}
               onMouseMove={(e) => {
                 if (!isDragging) return;
-                setPosition({
+                const newPosition = {
                   x: e.clientX - dragStart.x,
                   y: e.clientY - dragStart.y
-                });
+                };
+                setPosition(newPosition);
+                setPositionX([newPosition.x]);
+                setPositionY([newPosition.y]);
               }}
               onMouseUp={() => setIsDragging(false)}
               onMouseLeave={() => setIsDragging(false)}
             />
           </div>
+
+          {/* Download button below the photo */}
+          <Button
+            onClick={handleDownload}
+            className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white py-3 px-6 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
+          >
+            <Download className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            Baixar {photoType.name} Ajustada
+          </Button>
         </div>
 
         {/* Controls */}
@@ -261,6 +285,45 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
             />
             <div className="text-xs text-gray-400 mt-1">
               {zoom[0].toFixed(1)}x
+            </div>
+          </div>
+
+          {/* Controles de posição */}
+          <div className="bg-slate-700/30 rounded-xl p-3 sm:p-4">
+            <div className="space-y-3 sm:space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Posição X
+                </label>
+                <Slider
+                  value={positionX}
+                  onValueChange={setPositionX}
+                  min={-200}
+                  max={200}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="text-xs text-gray-400 mt-1">
+                  {positionX[0]}px
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Posição Y
+                </label>
+                <Slider
+                  value={positionY}
+                  onValueChange={setPositionY}
+                  min={-200}
+                  max={200}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="text-xs text-gray-400 mt-1">
+                  {positionY[0]}px
+                </div>
+              </div>
             </div>
           </div>
 
@@ -365,14 +428,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload, onBack,
                 Resetar
               </Button>
             </div>
-
-            <Button
-              onClick={handleDownload}
-              className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
-            >
-              <Download className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-              Baixar {photoType.name} Ajustada
-            </Button>
 
             <p className="text-xs sm:text-sm text-gray-400 text-center px-2">
               Após baixar, use o PhotoRoom para remover o fundo e depois faça upload da imagem processada
