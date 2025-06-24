@@ -13,6 +13,7 @@ interface ImageEditorProps {
 const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [zoom, setZoom] = useState([50]); // Start at 50%
+  const [brightness, setBrightness] = useState([100]); // Start at 100% (normal)
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -38,7 +39,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
     if (image && canvasRef.current) {
       drawImage();
     }
-  }, [image, zoom, position, rotation]);
+  }, [image, zoom, brightness, position, rotation]);
 
   const drawImage = () => {
     const canvas = canvasRef.current;
@@ -60,6 +61,9 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
     ctx.rotate((rotation * Math.PI) / 180);
     ctx.scale(zoom[0] / 100, zoom[0] / 100);
     ctx.translate(position.x, position.y);
+
+    // Aplicar filtro de brilho
+    ctx.filter = `brightness(${brightness[0]}%)`;
 
     // Desenhar a imagem centralizada
     ctx.drawImage(
@@ -124,6 +128,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
   const resetPosition = () => {
     setPosition({ x: 0, y: 0 });
     setRotation(0);
+    setBrightness([100]);
     if (image) {
       const scale = Math.min(canvasWidth / image.naturalWidth, canvasHeight / image.naturalHeight) * 100;
       setZoom([Math.min(scale, 100)]);
@@ -180,6 +185,23 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl, onDownload }) => {
             />
             <div className="text-xs text-gray-500 mt-1">
               {zoom[0]}%
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Brilho
+            </label>
+            <Slider
+              value={brightness}
+              onValueChange={setBrightness}
+              min={50}
+              max={150}
+              step={1}
+              className="w-full"
+            />
+            <div className="text-xs text-gray-500 mt-1">
+              {brightness[0]}%
             </div>
           </div>
 

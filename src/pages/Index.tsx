@@ -127,7 +127,7 @@ const Index = () => {
       const url = URL.createObjectURL(pdfBlob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `fotos-3x4-${quantity}-copias.pdf`;
+      a.download = 'FOTO 3X4 [PDF].pdf';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
