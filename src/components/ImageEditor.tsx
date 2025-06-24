@@ -35,7 +35,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [zoom, setZoom] = useState([1.5]);
   
-  // ... keep existing code (all state variables and effects)
   const [brightness, setBrightness] = useState([100]);
   const [contrast, setContrast] = useState([100]);
   const [highlights, setHighlights] = useState([0]);
@@ -58,6 +57,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState(0);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
+  const [autoPositioned, setAutoPositioned] = useState(false);
 
   const aspectRatio = photoType.width / photoType.height;
   const displayHeight = 266;
@@ -67,15 +67,135 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const canvasWidth = displayWidth * canvasMultiplier;
   const canvasHeight = displayHeight * canvasMultiplier;
 
+  // Função para detectar rosto e posicionar automaticamente
+  const detectFaceAndPosition = async (img: HTMLImageElement) => {
+    try {
+      console.log('Iniciando detecção automática de rosto...');
+      
+      // Criar canvas temporário para análise
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      if (!tempCtx) return;
+
+      // Redimensionar para análise mais rápida
+      const maxSize = 512;
+      const scale = Math.min(maxSize / img.naturalWidth, maxSize / img.naturalHeight);
+      tempCanvas.width = img.naturalWidth * scale;
+      tempCanvas.height = img.naturalHeight * scale;
+      
+      tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
+
+      // Tentar usar a API de detecção de rosto do navegador se disponível
+      if ('FaceDetector' in window) {
+        try {
+          const faceDetector = new (window as any).FaceDetector();
+          const faces = await faceDetector.detect(tempCanvas);
+          
+          if (faces && faces.length > 0) {
+            const face = faces[0];
+            const faceCenter = {
+              x: face.boundingBox.x + face.boundingBox.width / 2,
+              y: face.boundingBox.y + face.boundingBox.height / 2
+            };
+            
+            // Converter coordenadas para o canvas principal
+            const scaleBack = 1 / scale;
+            const adjustedCenter = {
+              x: faceCenter.x * scaleBack,
+              y: faceCenter.y * scaleBack
+            };
+            
+            // Calcular posicionamento ideal para foto 3x4
+            const idealX = adjustedCenter.x - img.naturalWidth / 2;
+            const idealY = adjustedCenter.y - img.naturalHeight * 0.35; // Rosto no terço superior
+            
+            // Normalizar para as coordenadas do canvas
+            const normalizedX = (idealX / img.naturalWidth) * 200;
+            const normalizedY = (idealY / img.naturalHeight) * 200;
+            
+            setPosition({ x: -normalizedX, y: -normalizedY });
+            setPositionX([-normalizedX]);
+            setPositionY([-normalizedY]);
+            
+            console.log('Rosto detectado e posicionado automaticamente!');
+            return true;
+          }
+        } catch (error) {
+          console.log('API de detecção de rosto não disponível:', error);
+        }
+      }
+      
+      // Fallback: usar análise de luminosidade para encontrar área do rosto
+      const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+      const data = imageData.data;
+      
+      let maxBrightness = 0;
+      let brightestX = 0;
+      let brightestY = 0;
+      
+      // Analisar terço superior da imagem (onde normalmente está o rosto)
+      const startY = 0;
+      const endY = Math.floor(tempCanvas.height * 0.6);
+      
+      for (let y = startY; y < endY; y += 4) {
+        for (let x = 0; x < tempCanvas.width; x += 4) {
+          const i = (y * tempCanvas.width + x) * 4;
+          const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+          
+          if (brightness > maxBrightness) {
+            maxBrightness = brightness;
+            brightestX = x;
+            brightestY = y;
+          }
+        }
+      }
+      
+      // Posicionar baseado na área mais brilhante (provavelmente o rosto)
+      const scaleBack = 1 / scale;
+      const adjustedCenter = {
+        x: brightestX * scaleBack,
+        y: brightestY * scaleBack
+      };
+      
+      const idealX = adjustedCenter.x - img.naturalWidth / 2;
+      const idealY = adjustedCenter.y - img.naturalHeight * 0.3;
+      
+      const normalizedX = (idealX / img.naturalWidth) * 100;
+      const normalizedY = (idealY / img.naturalHeight) * 100;
+      
+      setPosition({ x: -normalizedX, y: -normalizedY });
+      setPositionX([-normalizedX]);
+      setPositionY([-normalizedY]);
+      
+      console.log('Posicionamento automático baseado em luminosidade aplicado!');
+      return true;
+      
+    } catch (error) {
+      console.log('Erro na detecção automática:', error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     const img = new Image();
-    img.onload = () => {
+    img.onload = async () => {
       setImage(img);
       const scale = Math.min(canvasWidth / img.naturalWidth, canvasHeight / img.naturalHeight) * 2;
       setZoom([Math.min(scale, 3)]);
+      
+      // Aplicar posicionamento automático apenas uma vez
+      if (!autoPositioned) {
+        await detectFaceAndPosition(img);
+        setAutoPositioned(true);
+        
+        // Aplicar ajustes automáticos de qualidade
+        setBrightness([105]); // Leve aumento de brilho
+        setContrast([110]); // Leve aumento de contraste
+        setSaturation([105]); // Leve aumento de saturação
+      }
     };
     img.src = imageUrl;
-  }, [imageUrl, canvasWidth, canvasHeight]);
+  }, [imageUrl, canvasWidth, canvasHeight, autoPositioned]);
 
   useEffect(() => {
     setPosition({ x: positionX[0], y: positionY[0] });
@@ -191,6 +311,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     setSharpness([0]);
     setClarity([0]);
     setVignette([0]);
+    setAutoPositioned(false);
     
     if (image) {
       const scale = Math.min(canvasWidth / image.naturalWidth, canvasHeight / image.naturalHeight) * 2;
@@ -222,7 +343,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
           </div>
         )}
         <p className="text-gray-300 mb-4 text-sm sm:text-base px-2">
-          Use os controles para posicionar e ajustar sua foto na proporção {photoType.dimensions}
+          {autoPositioned ? 
+            '✨ Posicionamento automático aplicado! Ajuste conforme necessário.' : 
+            'Use os controles para posicionar e ajustar sua foto na proporção ' + photoType.dimensions
+          }
         </p>
       </div>
 
@@ -257,7 +381,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
 
         {/* Controls */}
         <div className="flex-1 space-y-4 sm:space-y-6 max-w-md max-h-[500px] sm:max-h-[600px] overflow-y-auto w-full">
-          {/* ... keep existing code (all control sections) */}
           <p className="text-xs text-gray-400 text-center lg:hidden">
             Clique e arraste para mover a imagem
           </p>
