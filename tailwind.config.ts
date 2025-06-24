@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -116,13 +117,34 @@ export default {
 						transform: 'translateX(-100%) translateY(100vh) rotate(45deg)',
 						opacity: '0'
 					}
+				},
+				'typing': {
+					'0%': {
+						width: '0'
+					},
+					'50%': {
+						width: '100%'
+					},
+					'100%': {
+						width: '100%'
+					}
+				},
+				'blink': {
+					'0%, 50%': {
+						opacity: '1'
+					},
+					'51%, 100%': {
+						opacity: '0'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'spotlight': 'spotlight 12s ease-in-out infinite',
-				'spotlight-reverse': 'spotlight-reverse 15s ease-in-out infinite 3s'
+				'spotlight-reverse': 'spotlight-reverse 15s ease-in-out infinite 3s',
+				'typing': 'typing 4s steps(25) infinite',
+				'blink': 'blink 1s infinite'
 			}
 		}
 	},
