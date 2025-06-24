@@ -255,14 +255,17 @@ const Index = () => {
       
       {/* Animated Spotlights */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* First spotlight */}
-        <div className="absolute w-96 h-96 bg-gradient-to-r from-transparent via-purple-400/20 to-transparent blur-3xl animate-spotlight"></div>
+        {/* First spotlight - more prominent */}
+        <div className="absolute w-[500px] h-[500px] bg-gradient-to-r from-transparent via-purple-400/40 to-transparent blur-2xl animate-spotlight shadow-2xl"></div>
         
-        {/* Second spotlight - reverse direction */}
-        <div className="absolute w-80 h-80 bg-gradient-to-r from-transparent via-blue-400/15 to-transparent blur-3xl animate-spotlight-reverse"></div>
+        {/* Second spotlight - reverse direction with stronger blue */}
+        <div className="absolute w-[400px] h-[400px] bg-gradient-to-r from-transparent via-blue-400/35 to-transparent blur-2xl animate-spotlight-reverse shadow-xl"></div>
         
-        {/* Third spotlight - smaller, different timing */}
-        <div className="absolute w-64 h-64 bg-gradient-to-r from-transparent via-pink-400/10 to-transparent blur-2xl animate-spotlight" style={{animationDelay: '6s', animationDuration: '18s'}}></div>
+        {/* Third spotlight - pink accent with higher opacity */}
+        <div className="absolute w-[350px] h-[350px] bg-gradient-to-r from-transparent via-pink-400/30 to-transparent blur-xl animate-spotlight shadow-lg" style={{animationDelay: '6s', animationDuration: '18s'}}></div>
+        
+        {/* Fourth spotlight - cyan accent for more variety */}
+        <div className="absolute w-[300px] h-[300px] bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent blur-2xl animate-spotlight-reverse shadow-lg" style={{animationDelay: '9s', animationDuration: '20s'}}></div>
       </div>
       
       <div className="container mx-auto px-4 py-4 sm:py-8 relative z-10">
