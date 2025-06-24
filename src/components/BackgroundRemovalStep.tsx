@@ -106,7 +106,7 @@ const BackgroundRemovalStep: React.FC<BackgroundRemovalStepProps> = ({
         </p>
       </div>
 
-      {/* Tools Section */}
+      {/* Tools Section - Botões com visual padronizado */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
         <Button
           onClick={openPhotoRoom}
@@ -118,7 +118,7 @@ const BackgroundRemovalStep: React.FC<BackgroundRemovalStepProps> = ({
         
         <Button
           onClick={openRemoveBg}
-          className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
+          className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 border border-purple-400/30"
         >
           <ExternalLink className="h-4 w-4 mr-2" />
           Abrir Remove.bg

@@ -1,6 +1,5 @@
-
 import React, { useState, useRef } from 'react';
-import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2 } from 'lucide-react';
+import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -32,7 +31,7 @@ interface ImageFile {
 }
 
 const Index = () => {
-  const [currentStep, setCurrentStep] = useState<'photoType' | 'upload' | 'multiEditor' | 'backgroundRemoval' | 'quantity' | 'final'>('photoType');
+  const [currentStep, setCurrentStep] = useState<'photoType' | 'upload' | 'multiEditor' | 'backgroundRemoval' | 'quantity' | 'final' | 'thanks'>('photoType');
   const [selectedPhotoType, setSelectedPhotoType] = useState<PhotoType | null>(null);
   const [images, setImages] = useState<ImageFile[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -209,6 +208,9 @@ const Index = () => {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      
+      // Avançar para tela de agradecimento após download
+      setCurrentStep('thanks');
       
       toast({
         title: "Download iniciado!",
@@ -436,6 +438,39 @@ const Index = () => {
               >
                 Criar Novo PDF
               </Button>
+            </Card>
+          )}
+
+          {/* Nova tela de agradecimento */}
+          {currentStep === 'thanks' && (
+            <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-4 sm:p-8 shadow-2xl border border-purple-500/20 text-center">
+              <div className="mb-6 sm:mb-8">
+                <div className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-4 w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-6 flex items-center justify-center shadow-xl">
+                  <Heart className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+                  Obrigado por usar o PhotoSpace!
+                </h2>
+                <p className="text-gray-300 text-base sm:text-lg mb-2">
+                  Seu PDF foi gerado com sucesso! 🎉
+                </p>
+                <p className="text-sm text-purple-300">
+                  Esperamos que suas fotos fiquem perfeitas!
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <Button
+                  onClick={resetApp}
+                  className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-8 py-3 rounded-xl text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105"
+                >
+                  Criar Outro PDF
+                </Button>
+                
+                <div className="text-xs text-gray-400 mt-6">
+                  Criado com ❤️ por Bazar do Izaias
+                </div>
+              </div>
             </Card>
           )}
         </div>
