@@ -7,9 +7,18 @@ import { Label } from '@/components/ui/label';
 import { generatePDF } from '@/utils/pdfGenerator';
 import { toast } from '@/hooks/use-toast';
 import ImageEditor from '@/components/ImageEditor';
+import PhotoTypeSelector from '@/components/PhotoTypeSelector';
+
+interface PhotoType {
+  id: string;
+  name: string;
+  dimensions: string;
+  description: string;
+}
 
 const Index = () => {
-  const [currentStep, setCurrentStep] = useState<'upload' | 'editor' | 'photoroom' | 'quantity' | 'final'>('upload');
+  const [currentStep, setCurrentStep] = useState<'photoType' | 'upload' | 'editor' | 'photoroom' | 'quantity' | 'final'>('photoType');
+  const [selectedPhotoType, setSelectedPhotoType] = useState<PhotoType | null>(null);
   const [originalImage, setOriginalImage] = useState<File | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [adjustedImage, setAdjustedImage] = useState<string | null>(null);
@@ -20,6 +29,17 @@ const Index = () => {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const photoRoomUploadRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoTypeSelect = (photoType: PhotoType) => {
+    console.log('Photo type selected:', photoType);
+    setSelectedPhotoType(photoType);
+    setCurrentStep('upload');
+    
+    toast({
+      title: `${photoType.name} selecionada!`,
+      description: `Agora faça upload da sua imagem para criar fotos ${photoType.dimensions}.`
+    });
+  };
 
   const handleFileSelect = (file: File) => {
     console.log('File selected:', file.name);
@@ -174,7 +194,8 @@ const Index = () => {
 
   const resetApp = () => {
     console.log('Resetting app...');
-    setCurrentStep('upload');
+    setCurrentStep('photoType');
+    setSelectedPhotoType(null);
     setOriginalImage(null);
     setProcessedImage(null);
     setAdjustedImage(null);
@@ -189,8 +210,8 @@ const Index = () => {
     }
   };
 
-  const goBackToUpload = () => {
-    setCurrentStep('upload');
+  const goBackToPhotoType = () => {
+    setCurrentStep('photoType');
     setProcessedImage(null);
     setAdjustedImage(null);
   };
@@ -222,21 +243,45 @@ const Index = () => {
             </div>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent mb-2 sm:mb-4 px-4">
-            📸 Foto 3x4 Sem Fundo
+            📸 Gerador de Fotos
           </h1>
           <p className="text-sm sm:text-lg text-gray-300 max-w-2xl mx-auto px-4 leading-relaxed">
-            PDF Pronto para Imprimir - Faça upload da sua foto, ajuste manualmente, use o PhotoRoom para remover o fundo e gere múltiplas cópias
+            {selectedPhotoType ? 
+              `Criando ${selectedPhotoType.name} (${selectedPhotoType.dimensions}) - PDF Pronto para Imprimir` :
+              'PDF Pronto para Imprimir - Escolha o tipo de foto, faça upload, ajuste e gere múltiplas cópias'
+            }
           </p>
         </div>
 
         {/* Main Content */}
         <div className="max-w-4xl mx-auto px-2 sm:px-0">
+          {currentStep === 'photoType' && (
+            <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
+          )}
+
           {currentStep === 'upload' && (
             <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-4 sm:p-8 shadow-2xl border border-purple-500/20">
               <div className="text-center mb-6 sm:mb-8">
-                <h2 className="text-xl sm:text-2xl font-semibold text-white mb-4">
-                  Faça Upload da sua Imagem
-                </h2>
+                <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+                  <Button
+                    onClick={goBackToPhotoType}
+                    className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Voltar
+                  </Button>
+                  <div className="text-center">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-white mb-2">
+                      Faça Upload da sua Imagem
+                    </h2>
+                    {selectedPhotoType && (
+                      <div className="text-sm text-purple-300 bg-purple-500/20 rounded-lg px-3 py-1 inline-block">
+                        {selectedPhotoType.name} ({selectedPhotoType.dimensions})
+                      </div>
+                    )}
+                  </div>
+                  <div className="hidden sm:block"></div>
+                </div>
                 <p className="text-gray-300 text-sm sm:text-base">
                   Escolha uma foto para começar o processo
                 </p>
@@ -304,13 +349,20 @@ const Index = () => {
                     <ArrowLeft className="h-4 w-4" />
                     Voltar
                   </Button>
-                  <h2 className="text-xl sm:text-2xl font-semibold text-white text-center sm:text-left">
-                    Remover Fundo no PhotoRoom
-                  </h2>
+                  <div className="text-center">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-white text-center sm:text-left">
+                      Remover Fundo no PhotoRoom
+                    </h2>
+                    {selectedPhotoType && (
+                      <div className="text-sm text-purple-300 bg-purple-500/20 rounded-lg px-3 py-1 inline-block mt-2">
+                        {selectedPhotoType.name} ({selectedPhotoType.dimensions})
+                      </div>
+                    )}
+                  </div>
                   <div className="hidden sm:block"></div>
                 </div>
                 <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base px-2">
-                  Sua imagem 3x4 já foi baixada. Agora use o PhotoRoom para remover o fundo e depois faça upload da imagem processada.
+                  Sua imagem {selectedPhotoType?.name || ''} já foi baixada. Agora use o PhotoRoom para remover o fundo e depois faça upload da imagem processada.
                 </p>
               </div>
 
@@ -356,9 +408,16 @@ const Index = () => {
                     <ArrowLeft className="h-4 w-4" />
                     Voltar
                   </Button>
-                  <h2 className="text-xl sm:text-2xl font-semibold text-white text-center sm:text-left">
-                    Imagem Final (3x4 sem fundo)
-                  </h2>
+                  <div className="text-center">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-white text-center sm:text-left">
+                      Imagem Final ({selectedPhotoType?.name || ''} sem fundo)
+                    </h2>
+                    {selectedPhotoType && (
+                      <div className="text-sm text-purple-300 bg-purple-500/20 rounded-lg px-3 py-1 inline-block mt-2">
+                        {selectedPhotoType.dimensions}
+                      </div>
+                    )}
+                  </div>
                   <div className="hidden sm:block"></div>
                 </div>
                 <div className="flex justify-center mb-4 sm:mb-6">
@@ -371,7 +430,7 @@ const Index = () => {
                   </div>
                 </div>
                 <p className="text-xs sm:text-sm text-gray-400 mb-4">
-                  Foto 3x4 sem fundo, pronta para gerar o PDF
+                  {selectedPhotoType?.name || 'Foto'} sem fundo, pronta para gerar o PDF
                 </p>
               </div>
 
@@ -422,7 +481,7 @@ const Index = () => {
                   PDF Pronto!
                 </h2>
                 <p className="text-gray-300 text-sm sm:text-base">
-                  {quantity} fotos 3x4 com contornos pretos para fácil recorte
+                  {quantity} {selectedPhotoType?.name || 'fotos'} ({selectedPhotoType?.dimensions || ''}) com contornos pretos para fácil recorte
                 </p>
               </div>
 
