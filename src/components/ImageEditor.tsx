@@ -274,6 +274,14 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     setIsDragging(false);
   };
 
+  // Nova função para zoom com mouse wheel
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    const newZoom = Math.max(0.1, Math.min(5, zoom[0] + delta));
+    setZoom([newZoom]);
+  };
+
   const handleDownload = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -368,7 +376,11 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
+              onWheel={handleWheel}
             />
+            <p className="text-xs text-gray-400 text-center mt-2">
+              Use a roda do mouse para dar zoom • Clique e arraste para mover
+            </p>
           </div>
 
           {/* Download button below the photo */}
@@ -384,7 +396,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
         {/* Controls */}
         <div className="flex-1 space-y-4 sm:space-y-6 max-w-md max-h-[500px] sm:max-h-[600px] overflow-y-auto w-full">
           <p className="text-xs text-gray-400 text-center lg:hidden">
-            Clique e arraste para mover a imagem
+            Clique e arraste para mover • Use a roda do mouse para zoom
           </p>
           
           <div className="bg-slate-700/30 rounded-xl p-3 sm:p-4">
