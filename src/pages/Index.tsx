@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -254,8 +255,9 @@ const Index = () => {
         <div className="absolute w-[300px] h-[300px] bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent blur-2xl animate-spotlight-reverse shadow-lg" style={{animationDelay: '9s', animationDuration: '20s'}}></div>
       </div>
       
-      {/* Galaxy Particles */}
+      {/* Galaxy Particles - Mais partículas e mais visíveis */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Partículas flutuantes */}
         <div className="galaxy-particle"></div>
         <div className="galaxy-particle"></div>
         <div className="galaxy-particle"></div>
@@ -264,6 +266,20 @@ const Index = () => {
         <div className="galaxy-particle"></div>
         <div className="galaxy-particle"></div>
         <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        
+        {/* Partículas que atravessam a tela */}
+        <div className="drift-particle"></div>
+        <div className="drift-particle"></div>
+        <div className="drift-particle"></div>
+        <div className="drift-particle"></div>
         <div className="drift-particle"></div>
         <div className="drift-particle"></div>
         <div className="drift-particle"></div>
