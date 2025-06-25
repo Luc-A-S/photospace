@@ -254,6 +254,22 @@ const Index = () => {
         <div className="absolute w-[300px] h-[300px] bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent blur-2xl animate-spotlight-reverse shadow-lg" style={{animationDelay: '9s', animationDuration: '20s'}}></div>
       </div>
       
+      {/* Galaxy Particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        <div className="galaxy-particle"></div>
+        <div className="drift-particle"></div>
+        <div className="drift-particle"></div>
+        <div className="drift-particle"></div>
+        <div className="drift-particle"></div>
+      </div>
+      
       <div className="container mx-auto px-4 py-4 sm:py-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
