@@ -37,6 +37,7 @@ const Index = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
+  const [isDragOver, setIsDragOver] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -97,6 +98,38 @@ const Index = () => {
       title: "Imagens carregadas!",
       description: `${newImages.length} imagem(ns) adicionada(s). Adicione mais ou clique em Editar.`
     });
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      // Filter only image files
+      const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+      if (imageFiles.length > 0) {
+        const fileList = new DataTransfer();
+        imageFiles.forEach(file => fileList.items.add(file));
+        handleFileSelect(fileList.files);
+      } else {
+        toast({
+          title: "Arquivo inválido",
+          description: "Por favor, arraste apenas arquivos de imagem.",
+          variant: "destructive"
+        });
+      }
+    }
   };
 
   const handlePasteImage = async () => {
@@ -433,23 +466,52 @@ const Index = () => {
               </div>
 
               <div className="flex flex-col items-center gap-6">
-                {/* Botão de upload */}
-                <Button
+                {/* Drag and Drop Zone */}
+                <div
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={`w-full border-2 border-dashed rounded-2xl p-8 transition-all duration-300 cursor-pointer ${
+                    isDragOver 
+                      ? 'border-purple-400 bg-purple-500/20 scale-105' 
+                      : 'border-purple-500/50 bg-slate-700/30 hover:border-purple-400 hover:bg-purple-500/10'
+                  }`}
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
                 >
-                  <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                  Selecionar Imagens
-                </Button>
+                  <div className="text-center">
+                    <div className="bg-gradient-to-r from-purple-500 to-blue-600 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                      <Upload className="h-8 w-8 text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      {isDragOver ? 'Solte suas imagens aqui!' : 'Arrastar e Soltar Imagens'}
+                    </h3>
+                    <p className="text-gray-300 text-sm mb-4">
+                      Arraste suas imagens aqui ou clique para selecionar
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Suporta: JPG, PNG, GIF, WEBP
+                    </p>
+                  </div>
+                </div>
 
-                {/* Botão de colar imagem */}
-                <Button
-                  onClick={handlePasteImage}
-                  className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
-                >
-                  <Clipboard className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                  Colar Imagem
-                </Button>
+                {/* Alternative buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Selecionar Arquivos
+                  </Button>
+
+                  <Button
+                    onClick={handlePasteImage}
+                    className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
+                  >
+                    <Clipboard className="h-4 w-4 mr-2" />
+                    Colar Imagem
+                  </Button>
+                </div>
 
                 <input
                   ref={fileInputRef}
