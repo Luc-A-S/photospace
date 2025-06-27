@@ -43,7 +43,15 @@ export const generatePDF = async (images: ImageFile[], photoWidth: number, photo
       
       console.log(`Generating PDF with ${totalPhotos} photos from ${images.length} different images`);
       
-      // Load all images first
+      // Load all images first (including the logo)
+      const logoPromise = new Promise<HTMLImageElement>((resolveImg, rejectImg) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => resolveImg(img);
+        img.onerror = () => rejectImg(new Error('Failed to load logo image'));
+        img.src = '/lovable-uploads/b8ab5e4d-8d4e-4b52-90c8-efde1b1a2621.png';
+      });
+      
       const loadPromises = images.map(image => {
         return new Promise<{ img: HTMLImageElement, quantity: number }>((resolveImg, rejectImg) => {
           const img = new Image();
@@ -54,7 +62,7 @@ export const generatePDF = async (images: ImageFile[], photoWidth: number, photo
         });
       });
       
-      Promise.all(loadPromises).then(loadedImages => {
+      Promise.all([logoPromise, ...loadPromises]).then(([logoImg, ...loadedImages]) => {
         // Add photos to PDF
         loadedImages.forEach(({ img, quantity }) => {
           for (let i = 0; i < quantity; i++) {
@@ -120,11 +128,18 @@ export const generatePDF = async (images: ImageFile[], photoWidth: number, photo
             { align: 'center' }
           );
           
-          // Add footer
+          // Add footer with logo and text
+          const footerY = pageHeight - 5;
+          const logoSize = 4; // Size of the logo in mm
+          
+          // Add logo on the left side of footer
+          pdf.addImage(logoImg, 'PNG', margin, footerY - logoSize, logoSize, logoSize);
+          
+          // Add footer text
           pdf.text(
             "Foto feita com amor por Bazar do Izaias! | PhotoSpace - Cada rosto merece um bom enquadramento.",
             pageWidth / 2,
-            pageHeight - 5,
+            footerY,
             { align: 'center' }
           );
         }
