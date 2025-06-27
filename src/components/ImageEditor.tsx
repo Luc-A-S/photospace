@@ -540,7 +540,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
             <div className="grid grid-cols-2 gap-2 sm:gap-3">
               <Button
                 onClick={rotateImage}
-                className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
+                className="bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
               >
                 <RotateCw className="h-4 w-4 mr-1 sm:mr-2" />
                 Girar 90°
