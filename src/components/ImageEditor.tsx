@@ -33,10 +33,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   downloadButtonText
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [zoom, setZoom] = useState([0.2]); // Alterado para 0.2x
+  const [zoom, setZoom] = useState([0.20]); // Alterado para 0.20x (valor inicial preciso)
   
-  const [brightness, setBrightness] = useState([115]); // Mantido em 115
-  const [contrast, setContrast] = useState([85]); // Alterado para 85
+  const [brightness, setBrightness] = useState([115]);
+  const [contrast, setContrast] = useState([85]);
   const [highlights, setHighlights] = useState([0]);
   const [shadows, setShadows] = useState([0]);
   const [whites, setWhites] = useState([0]);
@@ -44,15 +44,15 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   
   const [invertColors, setInvertColors] = useState(false);
   const [vibrance, setVibrance] = useState([0]);
-  const [saturation, setSaturation] = useState([115]); // Alterado para 115
+  const [saturation, setSaturation] = useState([115]);
   
   const [sharpness, setSharpness] = useState([0]);
   const [clarity, setClarity] = useState([0]);
   const [vignette, setVignette] = useState([0]);
   
-  const [position, setPosition] = useState({ x: -35, y: 145 }); // Alterado para os novos valores padrão
-  const [positionX, setPositionX] = useState([-35]); // Alterado para -35px
-  const [positionY, setPositionY] = useState([145]); // Alterado para 145px
+  const [position, setPosition] = useState({ x: -35, y: 145 });
+  const [positionX, setPositionX] = useState([-35]);
+  const [positionY, setPositionY] = useState([145]);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState(0);
@@ -67,17 +67,14 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const canvasWidth = displayWidth * canvasMultiplier;
   const canvasHeight = displayHeight * canvasMultiplier;
 
-  // Função para detectar rosto e posicionar automaticamente
   const detectFaceAndPosition = async (img: HTMLImageElement) => {
     try {
       console.log('Iniciando detecção automática de rosto...');
       
-      // Criar canvas temporário para análise
       const tempCanvas = document.createElement('canvas');
       const tempCtx = tempCanvas.getContext('2d');
       if (!tempCtx) return;
 
-      // Redimensionar para análise mais rápida
       const maxSize = 512;
       const scale = Math.min(maxSize / img.naturalWidth, maxSize / img.naturalHeight);
       tempCanvas.width = img.naturalWidth * scale;
@@ -85,7 +82,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
       
       tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
 
-      // Tentar usar a API de detecção de rosto do navegador se disponível
       if ('FaceDetector' in window) {
         try {
           const faceDetector = new (window as any).FaceDetector();
@@ -98,18 +94,15 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
               y: face.boundingBox.y + face.boundingBox.height / 2
             };
             
-            // Converter coordenadas para o canvas principal
             const scaleBack = 1 / scale;
             const adjustedCenter = {
               x: faceCenter.x * scaleBack,
               y: faceCenter.y * scaleBack
             };
             
-            // Calcular posicionamento ideal para foto 3x4
             const idealX = adjustedCenter.x - img.naturalWidth / 2;
-            const idealY = adjustedCenter.y - img.naturalHeight * 0.35; // Rosto no terço superior
+            const idealY = adjustedCenter.y - img.naturalHeight * 0.35;
             
-            // Normalizar para as coordenadas do canvas
             const normalizedX = (idealX / img.naturalWidth) * 200;
             const normalizedY = (idealY / img.naturalHeight) * 200;
             
@@ -125,7 +118,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
         }
       }
       
-      // Fallback: usar análise de luminosidade para encontrar área do rosto
       const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
       const data = imageData.data;
       
@@ -133,7 +125,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
       let brightestX = 0;
       let brightestY = 0;
       
-      // Analisar terço superior da imagem (onde normalmente está o rosto)
       const startY = 0;
       const endY = Math.floor(tempCanvas.height * 0.6);
       
@@ -150,7 +141,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
         }
       }
       
-      // Posicionar baseado na área mais brilhante (provavelmente o rosto)
       const scaleBack = 1 / scale;
       const adjustedCenter = {
         x: brightestX * scaleBack,
@@ -181,20 +171,17 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     img.onload = async () => {
       setImage(img);
       const scale = Math.min(canvasWidth / img.naturalWidth, canvasHeight / img.naturalHeight) * 2.5;
-      setZoom([0.2]); // Definido como 0.2x por padrão
+      setZoom([0.20]); // Definido como 0.20x por padrão (valor preciso)
       
-      // Aplicar posicionamento automático apenas uma vez
       if (!autoPositioned) {
-        // Definir posição padrão sem detecção automática
         setPosition({ x: -35, y: 145 });
         setPositionX([-35]);
         setPositionY([145]);
         setAutoPositioned(true);
         
-        // Aplicar ajustes automáticos de qualidade
         setBrightness([115]);
-        setContrast([85]); // Alterado para 85
-        setSaturation([115]); // Alterado para 115
+        setContrast([85]);
+        setSaturation([115]);
       }
     };
     img.src = imageUrl;
@@ -274,11 +261,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     setIsDragging(false);
   };
 
-  // Função para zoom com mouse wheel apenas no canvas
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const delta = e.deltaY > 0 ? -0.01 : 0.01; // Alterado para incrementos menores
+    const delta = e.deltaY > 0 ? -0.01 : 0.01;
     const newZoom = Math.max(0.1, Math.min(5, zoom[0] + delta));
     setZoom([newZoom]);
   };
@@ -307,26 +293,26 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   };
 
   const resetPosition = () => {
-    setPosition({ x: -35, y: 145 }); // Alterado para os novos valores padrão
-    setPositionX([-35]); // Alterado para -35px
-    setPositionY([145]); // Alterado para 145px
+    setPosition({ x: -35, y: 145 });
+    setPositionX([-35]);
+    setPositionY([145]);
     setRotation(0);
     setBrightness([115]);
-    setContrast([85]); // Alterado para 85
+    setContrast([85]);
     setHighlights([0]);
     setShadows([0]);
     setWhites([0]);
     setBlacks([0]);
     setInvertColors(false);
     setVibrance([0]);
-    setSaturation([115]); // Alterado para 115
+    setSaturation([115]);
     setSharpness([0]);
     setClarity([0]);
     setVignette([0]);
     setAutoPositioned(false);
     
     if (image) {
-      setZoom([0.2]); // Definido como 0.2x por padrão
+      setZoom([0.20]); // Definido como 0.20x por padrão (valor preciso)
     }
   };
 
