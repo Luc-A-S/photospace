@@ -105,14 +105,14 @@ export const generatePDF = async (images: ImageFile[], photoWidth: number, photo
           }
         });
         
-        // Add footer with info
+        // Add footer with custom message
         const totalPages = Math.ceil(totalPhotos / photosPerPage);
         for (let page = 1; page <= totalPages; page++) {
           pdf.setPage(page);
           pdf.setFontSize(8);
           pdf.setTextColor(100, 100, 100);
           pdf.text(
-            `Página ${page}/${totalPages} - ${totalPhotos} fotos ${photoWidth}x${photoHeight}mm - Recorte nas linhas pretas`,
+            "Foto feita com amor por Bazar do Izaias! | PhotoSpace - Cada rosto merece um bom enquadramento.",
             pageWidth / 2,
             pageHeight - 5,
             { align: 'center' }
