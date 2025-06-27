@@ -74,30 +74,32 @@ export const generatePDF = async (images: ImageFile[], photoWidth: number, photo
             // Add image first
             pdf.addImage(img, 'PNG', x, y, photoWidth, photoHeight);
             
-            // Add thick black border for easy cutting
+            // Add border inside the image boundaries (inset by 0.1mm to stay within limits)
+            const borderInset = 0.1;
             pdf.setDrawColor(0, 0, 0); // Black color
-            pdf.setLineWidth(0.5); // Thicker line for visibility
-            pdf.rect(x, y, photoWidth, photoHeight);
+            pdf.setLineWidth(0.3); // Thinner line to stay within bounds
+            pdf.rect(x + borderInset, y + borderInset, photoWidth - (2 * borderInset), photoHeight - (2 * borderInset));
             
-            // Add cutting guides (small marks at corners)
-            const guideLength = 3;
-            pdf.setLineWidth(0.3);
+            // Add cutting guides outside the image area (not overlapping)
+            const guideLength = 2;
+            const guideOffset = 0.5; // Distance from image edge
+            pdf.setLineWidth(0.2);
             
-            // Top-left corner guides
-            pdf.line(x - guideLength, y, x, y);
-            pdf.line(x, y - guideLength, x, y);
+            // Top-left corner guides (outside the image)
+            pdf.line(x - guideOffset - guideLength, y, x - guideOffset, y);
+            pdf.line(x, y - guideOffset - guideLength, x, y - guideOffset);
             
-            // Top-right corner guides
-            pdf.line(x + photoWidth, y - guideLength, x + photoWidth, y);
-            pdf.line(x + photoWidth, y, x + photoWidth + guideLength, y);
+            // Top-right corner guides (outside the image)
+            pdf.line(x + photoWidth + guideOffset, y - guideOffset - guideLength, x + photoWidth + guideOffset, y);
+            pdf.line(x + photoWidth + guideOffset, y, x + photoWidth + guideOffset + guideLength, y);
             
-            // Bottom-left corner guides
-            pdf.line(x - guideLength, y + photoHeight, x, y + photoHeight);
-            pdf.line(x, y + photoHeight, x, y + photoHeight + guideLength);
+            // Bottom-left corner guides (outside the image)
+            pdf.line(x - guideOffset - guideLength, y + photoHeight, x - guideOffset, y + photoHeight);
+            pdf.line(x, y + photoHeight + guideOffset, x, y + photoHeight + guideOffset + guideLength);
             
-            // Bottom-right corner guides
-            pdf.line(x + photoWidth, y + photoHeight, x + photoWidth + guideLength, y + photoHeight);
-            pdf.line(x + photoWidth, y + photoHeight + guideLength, x + photoWidth, y + photoHeight);
+            // Bottom-right corner guides (outside the image)
+            pdf.line(x + photoWidth + guideOffset, y + photoHeight, x + photoWidth + guideOffset + guideLength, y + photoHeight);
+            pdf.line(x + photoWidth + guideOffset, y + photoHeight + guideOffset, x + photoWidth + guideOffset, y + photoHeight + guideOffset + guideLength);
             
             photoCount++;
           }
