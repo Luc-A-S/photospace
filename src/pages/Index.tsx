@@ -1,6 +1,5 @@
-
 import React, { useState, useRef } from 'react';
-import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, Heart } from 'lucide-react';
+import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, Heart, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -37,8 +36,17 @@ const Index = () => {
   const [images, setImages] = useState<ImageFile[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const toggleAnimation = () => {
+    setIsAnimationEnabled(prev => !prev);
+    toast({
+      title: isAnimationEnabled ? "Animações desativadas" : "Animações ativadas",
+      description: isAnimationEnabled ? "As animações do fundo foram pausadas." : "As animações do fundo foram reativadas."
+    });
+  };
 
   const handlePhotoTypeSelect = (photoType: PhotoType) => {
     console.log('Photo type selected:', photoType);
@@ -300,48 +308,73 @@ const Index = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-purple-800/20 to-blue-800/20"></div>
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-600/10 via-transparent to-transparent"></div>
       
-      {/* Animated Spotlights */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute w-[500px] h-[500px] bg-gradient-to-r from-transparent via-purple-400/40 to-transparent blur-2xl animate-spotlight shadow-2xl"></div>
-        <div className="absolute w-[400px] h-[400px] bg-gradient-to-r from-transparent via-blue-400/35 to-transparent blur-2xl animate-spotlight-reverse shadow-xl"></div>
-        <div className="absolute w-[350px] h-[350px] bg-gradient-to-r from-transparent via-pink-400/30 to-transparent blur-xl animate-spotlight shadow-lg" style={{animationDelay: '6s', animationDuration: '18s'}}></div>
-        <div className="absolute w-[300px] h-[300px] bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent blur-2xl animate-spotlight-reverse shadow-lg" style={{animationDelay: '9s', animationDuration: '20s'}}></div>
-      </div>
+      {/* Animated Spotlights - conditionally rendered */}
+      {isAnimationEnabled && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute w-[500px] h-[500px] bg-gradient-to-r from-transparent via-purple-400/40 to-transparent blur-2xl animate-spotlight shadow-2xl"></div>
+          <div className="absolute w-[400px] h-[400px] bg-gradient-to-r from-transparent via-blue-400/35 to-transparent blur-2xl animate-spotlight-reverse shadow-xl"></div>
+          <div className="absolute w-[350px] h-[350px] bg-gradient-to-r from-transparent via-pink-400/30 to-transparent blur-xl animate-spotlight shadow-lg" style={{animationDelay: '6s', animationDuration: '18s'}}></div>
+          <div className="absolute w-[300px] h-[300px] bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent blur-2xl animate-spotlight-reverse shadow-lg" style={{animationDelay: '9s', animationDuration: '20s'}}></div>
+        </div>
+      )}
       
-      {/* Galaxy Particles - Mais partículas e mais visíveis */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Partículas flutuantes */}
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        <div className="galaxy-particle"></div>
-        
-        {/* Partículas que atravessam a tela */}
-        <div className="drift-particle"></div>
-        <div className="drift-particle"></div>
-        <div className="drift-particle"></div>
-        <div className="drift-particle"></div>
-        <div className="drift-particle"></div>
-        <div className="drift-particle"></div>
-        <div className="drift-particle"></div>
-        <div className="drift-particle"></div>
-      </div>
+      {/* Galaxy Particles - conditionally rendered */}
+      {isAnimationEnabled && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Partículas flutuantes */}
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          <div className="galaxy-particle"></div>
+          
+          {/* Partículas que atravessam a tela */}
+          <div className="drift-particle"></div>
+          <div className="drift-particle"></div>
+          <div className="drift-particle"></div>
+          <div className="drift-particle"></div>
+          <div className="drift-particle"></div>
+          <div className="drift-particle"></div>
+          <div className="drift-particle"></div>
+          <div className="drift-particle"></div>
+        </div>
+      )}
       
       <div className="container mx-auto px-4 py-4 sm:py-8 relative z-10">
         {/* Header */}
-        <div className="text-center mb-8 sm:mb-12">
+        <div className="text-center mb-8 sm:mb-12 relative">
+          {/* Animation Toggle Button */}
+          <div className="absolute top-0 right-0">
+            <Button
+              onClick={toggleAnimation}
+              size="sm"
+              className="bg-slate-800/60 backdrop-blur-sm hover:bg-slate-700/70 text-white border border-purple-500/30 shadow-lg transition-all duration-300 hover:scale-105"
+            >
+              {isAnimationEnabled ? (
+                <>
+                  <Pause className="h-4 w-4 mr-2" />
+                  Pausar Animações
+                </>
+              ) : (
+                <>
+                  <Play className="h-4 w-4 mr-2" />
+                  Ativar Animações
+                </>
+              )}
+            </Button>
+          </div>
+
           <div className="flex items-center justify-center mb-4 sm:mb-6">
             <div className="bg-white rounded-2xl p-3 shadow-2xl">
               <img 
