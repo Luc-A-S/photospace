@@ -399,121 +399,121 @@ const Index = () => {
               </div>
 
               <div className="flex flex-col items-center gap-6">
-              {/* Botão de upload */}
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
-              >
-                <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                Selecionar Imagens
-              </Button>
+                {/* Botão de upload */}
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
+                >
+                  <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                  Selecionar Imagens
+                </Button>
 
-              {/* Botão de colar imagem */}
-              <Button
-                onClick={handlePasteImage}
-                className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
-              >
-                <Clipboard className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                Colar Imagem
-              </Button>
+                {/* Botão de colar imagem */}
+                <Button
+                  onClick={handlePasteImage}
+                  className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
+                >
+                  <Clipboard className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                  Colar Imagem
+                </Button>
 
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={(e) => {
-                  if (e.target.files) handleFileSelect(e.target.files);
-                }}
-                className="hidden"
-              />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => {
+                    if (e.target.files) handleFileSelect(e.target.files);
+                  }}
+                  className="hidden"
+                />
 
-              {images.length > 0 && (
-                <div className="w-full space-y-4">
-                  <h3 className="text-lg font-medium text-white text-center">
-                    Imagens Anexadas ({images.length})
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {images.map((image, index) => (
-                      <div key={image.id} className="bg-slate-700/50 rounded-xl p-3 relative">
-                        <img
-                          src={image.url}
-                          alt={`Imagem ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-lg mb-2"
-                        />
-                        <p className="text-xs text-gray-300 text-center mb-2">
-                          Imagem {index + 1}
-                        </p>
-                        <Button
-                          onClick={() => removeImage(image.id)}
-                          size="sm"
-                          className="w-full bg-red-500 hover:bg-red-600 text-white"
-                        >
-                          <Trash2 className="h-3 w-3 mr-1" />
-                          Remover
-                        </Button>
-                      </div>
-                    ))}
+                {images.length > 0 && (
+                  <div className="w-full space-y-4">
+                    <h3 className="text-lg font-medium text-white text-center">
+                      Imagens Anexadas ({images.length})
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {images.map((image, index) => (
+                        <div key={image.id} className="bg-slate-700/50 rounded-xl p-3 relative">
+                          <img
+                            src={image.url}
+                            alt={`Imagem ${index + 1}`}
+                            className="w-full h-24 object-cover rounded-lg mb-2"
+                          />
+                          <p className="text-xs text-gray-300 text-center mb-2">
+                            Imagem {index + 1}
+                          </p>
+                          <Button
+                            onClick={() => removeImage(image.id)}
+                            size="sm"
+                            className="w-full bg-red-500 hover:bg-red-600 text-white"
+                          >
+                            <Trash2 className="h-3 w-3 mr-1" />
+                            Remover
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="flex justify-center">
+                      <Button
+                        onClick={proceedToEdit}
+                        className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105"
+                      >
+                        <Edit3 className="h-4 w-4 mr-2" />
+                        Editar Imagens
+                      </Button>
+                    </div>
                   </div>
-                  
-                  <div className="flex justify-center">
-                    <Button
-                      onClick={proceedToEdit}
-                      className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105"
-                    >
-                      <Edit3 className="h-4 w-4 mr-2" />
-                      Editar Imagens
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </Card>
-        )}
-
-        {currentStep === 'multiEditor' && selectedPhotoType && (
-          <MultiImageEditor
-            images={images}
-            photoType={selectedPhotoType}
-            onImageAdjusted={handleImageAdjusted}
-            onBack={goBack}
-            onContinue={proceedToBackgroundRemoval}
-          />
-        )}
-
-        {currentStep === 'backgroundRemoval' && (
-          <BackgroundRemovalStep
-            images={images}
-            onProcessedImageUpload={handleProcessedImageUpload}
-            onBack={goBack}
-            onContinue={proceedToQuantity}
-          />
-        )}
-
-        {currentStep === 'quantity' && selectedPhotoType && (
-          <QuantitySelector
-            images={images}
-            photoType={selectedPhotoType}
-            onQuantityUpdate={handleQuantityUpdate}
-            onBack={goBack}
-            onGeneratePDF={generateDocument}
-            isProcessing={isProcessing}
-          />
-        )}
-
-        {currentStep === 'final' && pdfBlob && (
-          <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-4 sm:p-8 shadow-2xl border border-purple-500/20 text-center">
-            <div className="mb-6 sm:mb-8">
-              <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-full p-4 w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 flex items-center justify-center shadow-xl">
-                <Download className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+                )}
               </div>
-              <h2 className="text-xl sm:text-2xl font-semibold text-white mb-2">
-                PDF Pronto!
-              </h2>
-              <p className="text-gray-300 text-sm sm:text-base">
-                {images.reduce((sum, img) => sum + img.quantity, 0)} {selectedPhotoType?.name || 'fotos'} ({selectedPhotoType?.dimensions || ''}) com contornos pretos para fácil recorte
-              </p>
-            </div>
+            </Card>
+          )}
+
+          {currentStep === 'multiEditor' && selectedPhotoType && (
+            <MultiImageEditor
+              images={images}
+              photoType={selectedPhotoType}
+              onImageAdjusted={handleImageAdjusted}
+              onBack={goBack}
+              onContinue={proceedToBackgroundRemoval}
+            />
+          )}
+
+          {currentStep === 'backgroundRemoval' && (
+            <BackgroundRemovalStep
+              images={images}
+              onProcessedImageUpload={handleProcessedImageUpload}
+              onBack={goBack}
+              onContinue={proceedToQuantity}
+            />
+          )}
+
+          {currentStep === 'quantity' && selectedPhotoType && (
+            <QuantitySelector
+              images={images}
+              photoType={selectedPhotoType}
+              onQuantityUpdate={handleQuantityUpdate}
+              onBack={goBack}
+              onGeneratePDF={generateDocument}
+              isProcessing={isProcessing}
+            />
+          )}
+
+          {currentStep === 'final' && pdfBlob && (
+            <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-4 sm:p-8 shadow-2xl border border-purple-500/20 text-center">
+              <div className="mb-6 sm:mb-8">
+                <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-full p-4 w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 flex items-center justify-center shadow-xl">
+                  <Download className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+                </div>
+                <h2 className="text-xl sm:text-2xl font-semibold text-white mb-2">
+                  PDF Pronto!
+                </h2>
+                <p className="text-gray-300 text-sm sm:text-base">
+                  {images.reduce((sum, img) => sum + img.quantity, 0)} {selectedPhotoType?.name || 'fotos'} ({selectedPhotoType?.dimensions || ''}) com contornos pretos para fácil recorte
+                </p>
+              </div>
 
             <div className="flex justify-center">
               <Button
