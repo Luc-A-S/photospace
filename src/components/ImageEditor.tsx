@@ -278,7 +278,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    const delta = e.deltaY > 0 ? -0.01 : 0.01; // Alterado para incrementos menores
     const newZoom = Math.max(0.1, Math.min(5, zoom[0] + delta));
     setZoom([newZoom]);
   };
@@ -406,11 +406,11 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
               onValueChange={setZoom}
               min={0.1}
               max={5}
-              step={0.1}
+              step={0.01}
               className="w-full"
             />
             <div className="text-xs text-gray-400 mt-1">
-              {zoom[0].toFixed(1)}x
+              {zoom[0].toFixed(2)}x
             </div>
           </div>
 
