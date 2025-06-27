@@ -1,7 +1,8 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Download, RotateCw, Move, Sun, Palette, ArrowLeft } from 'lucide-react';
+import { Download, RotateCw, Move, Sun, Palette, ArrowLeft, FlipHorizontal, FlipVertical } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -56,6 +57,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState(0);
+  const [flipHorizontal, setFlipHorizontal] = useState(false);
+  const [flipVertical, setFlipVertical] = useState(false);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [autoPositioned, setAutoPositioned] = useState(false);
 
@@ -195,7 +198,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     if (image && canvasRef.current) {
       drawImage();
     }
-  }, [image, zoom, brightness, contrast, highlights, shadows, whites, blacks, invertColors, vibrance, saturation, sharpness, clarity, vignette, position, rotation]);
+  }, [image, zoom, brightness, contrast, highlights, shadows, whites, blacks, invertColors, vibrance, saturation, sharpness, clarity, vignette, position, rotation, flipHorizontal, flipVertical]);
 
   const drawImage = () => {
     const canvas = canvasRef.current;
@@ -212,7 +215,12 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
 
     ctx.translate(canvas.width / 2, canvas.height / 2);
     ctx.rotate((rotation * Math.PI) / 180);
-    ctx.scale(zoom[0], zoom[0]);
+    
+    // Apply flips
+    const scaleX = flipHorizontal ? -1 : 1;
+    const scaleY = flipVertical ? -1 : 1;
+    ctx.scale(zoom[0] * scaleX, zoom[0] * scaleY);
+    
     ctx.translate(position.x, position.y);
 
     let filters = [];
@@ -292,11 +300,21 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     setRotation(prev => (prev + 90) % 360);
   };
 
+  const toggleFlipHorizontal = () => {
+    setFlipHorizontal(prev => !prev);
+  };
+
+  const toggleFlipVertical = () => {
+    setFlipVertical(prev => !prev);
+  };
+
   const resetPosition = () => {
     setPosition({ x: -35, y: 145 });
     setPositionX([-35]);
     setPositionY([145]);
     setRotation(0);
+    setFlipHorizontal(false);
+    setFlipVertical(false);
     setBrightness([115]);
     setContrast([85]);
     setHighlights([0]);
@@ -519,10 +537,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
           </div>
 
           <div className="space-y-3 sm:space-y-4">
-            <div className="flex gap-2 sm:gap-3">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               <Button
                 onClick={rotateImage}
-                className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
+                className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
               >
                 <RotateCw className="h-4 w-4 mr-1 sm:mr-2" />
                 Girar 90°
@@ -530,10 +548,26 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
               
               <Button
                 onClick={resetPosition}
-                className="flex-1 bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
+                className="bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
               >
                 <Move className="h-4 w-4 mr-1 sm:mr-2" />
                 Resetar
+              </Button>
+
+              <Button
+                onClick={toggleFlipHorizontal}
+                className={`${flipHorizontal ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-gray-500 to-gray-600'} hover:opacity-80 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base`}
+              >
+                <FlipHorizontal className="h-4 w-4 mr-1 sm:mr-2" />
+                Flip H
+              </Button>
+
+              <Button
+                onClick={toggleFlipVertical}
+                className={`${flipVertical ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-gray-500 to-gray-600'} hover:opacity-80 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base`}
+              >
+                <FlipVertical className="h-4 w-4 mr-1 sm:mr-2" />
+                Flip V
               </Button>
             </div>
 
