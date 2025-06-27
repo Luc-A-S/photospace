@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, Heart, Play, Pause, HelpCircle } from 'lucide-react';
+import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, Heart, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,6 @@ import PhotoTypeSelector from '@/components/PhotoTypeSelector';
 import MultiImageEditor from '@/components/MultiImageEditor';
 import BackgroundRemovalStep from '@/components/BackgroundRemovalStep';
 import QuantitySelector from '@/components/QuantitySelector';
-import TutorialOverlay from '@/components/TutorialOverlay';
 
 interface PhotoType {
   id: string;
@@ -38,7 +37,6 @@ const Index = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
-  const [isTutorialActive, setIsTutorialActive] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -47,22 +45,6 @@ const Index = () => {
     toast({
       title: isAnimationEnabled ? "Animações desativadas" : "Animações ativadas",
       description: isAnimationEnabled ? "As animações do fundo foram pausadas." : "As animações do fundo foram reativadas."
-    });
-  };
-
-  const startTutorial = () => {
-    setIsTutorialActive(true);
-    toast({
-      title: "Tutorial iniciado!",
-      description: "Siga as instruções para aprender a usar o PhotoSpace."
-    });
-  };
-
-  const closeTutorial = () => {
-    setIsTutorialActive(false);
-    toast({
-      title: "Tutorial finalizado",
-      description: "Agora você pode usar o PhotoSpace com confiança!"
     });
   };
 
@@ -393,18 +375,6 @@ const Index = () => {
             </Button>
           </div>
 
-          {/* Help Button */}
-          <div className="absolute top-0 right-0">
-            <Button
-              onClick={startTutorial}
-              size="sm"
-              className="bg-blue-600/80 backdrop-blur-sm hover:bg-blue-700/90 text-white border border-blue-500/30 shadow-lg transition-all duration-300 hover:scale-105"
-            >
-              <HelpCircle className="h-4 w-4 mr-2" />
-              Ajuda
-            </Button>
-          </div>
-
           <div className="flex items-center justify-center mb-4 sm:mb-6">
             <div className="bg-white rounded-2xl p-3 shadow-2xl">
               <img 
@@ -431,9 +401,7 @@ const Index = () => {
         {/* Main Content */}
         <div className="max-w-4xl mx-auto px-2 sm:px-0">
           {currentStep === 'photoType' && (
-            <div data-tutorial="photo-types">
-              <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
-            </div>
+            <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
           )}
 
           {currentStep === 'upload' && (
@@ -467,7 +435,6 @@ const Index = () => {
               <div className="flex flex-col items-center gap-6">
                 {/* Botão de upload */}
                 <Button
-                  data-tutorial="upload-button"
                   onClick={() => fileInputRef.current?.click()}
                   className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 sm:px-8 py-3 rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
                 >
@@ -525,7 +492,6 @@ const Index = () => {
                     
                     <div className="flex justify-center">
                       <Button
-                        data-tutorial="edit-button"
                         onClick={proceedToEdit}
                         className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105"
                       >
@@ -550,27 +516,23 @@ const Index = () => {
           )}
 
           {currentStep === 'backgroundRemoval' && (
-            <div data-tutorial="background-step">
-              <BackgroundRemovalStep
-                images={images}
-                onProcessedImageUpload={handleProcessedImageUpload}
-                onBack={goBack}
-                onContinue={proceedToQuantity}
-              />
-            </div>
+            <BackgroundRemovalStep
+              images={images}
+              onProcessedImageUpload={handleProcessedImageUpload}
+              onBack={goBack}
+              onContinue={proceedToQuantity}
+            />
           )}
 
           {currentStep === 'quantity' && selectedPhotoType && (
-            <div data-tutorial="quantity-step">
-              <QuantitySelector
-                images={images}
-                photoType={selectedPhotoType}
-                onQuantityUpdate={handleQuantityUpdate}
-                onBack={goBack}
-                onGeneratePDF={generateDocument}
-                isProcessing={isProcessing}
-              />
-            </div>
+            <QuantitySelector
+              images={images}
+              photoType={selectedPhotoType}
+              onQuantityUpdate={handleQuantityUpdate}
+              onBack={goBack}
+              onGeneratePDF={generateDocument}
+              isProcessing={isProcessing}
+            />
           )}
 
           {currentStep === 'final' && pdfBlob && (
@@ -633,13 +595,6 @@ const Index = () => {
           )}
         </div>
       </div>
-
-      {/* Tutorial Overlay */}
-      <TutorialOverlay
-        isActive={isTutorialActive}
-        onClose={closeTutorial}
-        currentStep={currentStep}
-      />
     </div>
   );
 };
