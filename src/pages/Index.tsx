@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, Heart, Play, Pause, CircleHelp } from 'lucide-react';
+import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, Heart, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,6 @@ import PhotoTypeSelector from '@/components/PhotoTypeSelector';
 import MultiImageEditor from '@/components/MultiImageEditor';
 import BackgroundRemovalStep from '@/components/BackgroundRemovalStep';
 import QuantitySelector from '@/components/QuantitySelector';
-import TutorialOverlay from '@/components/TutorialOverlay';
 
 interface PhotoType {
   id: string;
@@ -38,25 +37,8 @@ const Index = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
-  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const startTutorial = () => {
-    setIsTutorialOpen(true);
-    toast({
-      title: "Tutorial iniciado!",
-      description: "Vou te guiar através de cada etapa do PhotoSpace."
-    });
-  };
-
-  const closeTutorial = () => {
-    setIsTutorialOpen(false);
-    toast({
-      title: "Tutorial finalizado",
-      description: "Agora você pode usar o PhotoSpace com confiança!"
-    });
-  };
 
   const toggleAnimation = () => {
     setIsAnimationEnabled(prev => !prev);
@@ -372,9 +354,8 @@ const Index = () => {
       <div className="container mx-auto px-4 py-4 sm:py-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12 relative">
-          {/* Header Controls */}
-          <div className="absolute top-0 left-0 right-0 flex justify-between items-center">
-            {/* Animation Toggle Button */}
+          {/* Animation Toggle Button */}
+          <div className="absolute top-0 right-0">
             <Button
               onClick={toggleAnimation}
               size="sm"
@@ -391,16 +372,6 @@ const Index = () => {
                   Ativar Animações
                 </>
               )}
-            </Button>
-
-            {/* Help Button */}
-            <Button
-              onClick={startTutorial}
-              size="sm"
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105"
-            >
-              <CircleHelp className="h-4 w-4 mr-2" />
-              Ajuda
             </Button>
           </div>
 
@@ -430,13 +401,11 @@ const Index = () => {
         {/* Main Content */}
         <div className="max-w-4xl mx-auto px-2 sm:px-0">
           {currentStep === 'photoType' && (
-            <div data-tutorial="photo-type-selector">
-              <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
-            </div>
+            <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
           )}
 
           {currentStep === 'upload' && (
-            <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-4 sm:p-8 shadow-2xl border border-purple-500/20" data-tutorial="upload-section">
+            <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-4 sm:p-8 shadow-2xl border border-purple-500/20">
               <div className="text-center mb-6 sm:mb-8">
                 <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                   <Button
@@ -537,43 +506,37 @@ const Index = () => {
           )}
 
           {currentStep === 'multiEditor' && selectedPhotoType && (
-            <div data-tutorial="edit-section">
-              <MultiImageEditor
-                images={images}
-                photoType={selectedPhotoType}
-                onImageAdjusted={handleImageAdjusted}
-                onBack={goBack}
-                onContinue={proceedToBackgroundRemoval}
-              />
-            </div>
+            <MultiImageEditor
+              images={images}
+              photoType={selectedPhotoType}
+              onImageAdjusted={handleImageAdjusted}
+              onBack={goBack}
+              onContinue={proceedToBackgroundRemoval}
+            />
           )}
 
           {currentStep === 'backgroundRemoval' && (
-            <div data-tutorial="background-section">
-              <BackgroundRemovalStep
-                images={images}
-                onProcessedImageUpload={handleProcessedImageUpload}
-                onBack={goBack}
-                onContinue={proceedToQuantity}
-              />
-            </div>
+            <BackgroundRemovalStep
+              images={images}
+              onProcessedImageUpload={handleProcessedImageUpload}
+              onBack={goBack}
+              onContinue={proceedToQuantity}
+            />
           )}
 
           {currentStep === 'quantity' && selectedPhotoType && (
-            <div data-tutorial="quantity-section">
-              <QuantitySelector
-                images={images}
-                photoType={selectedPhotoType}
-                onQuantityUpdate={handleQuantityUpdate}
-                onBack={goBack}
-                onGeneratePDF={generateDocument}
-                isProcessing={isProcessing}
-              />
-            </div>
+            <QuantitySelector
+              images={images}
+              photoType={selectedPhotoType}
+              onQuantityUpdate={handleQuantityUpdate}
+              onBack={goBack}
+              onGeneratePDF={generateDocument}
+              isProcessing={isProcessing}
+            />
           )}
 
           {currentStep === 'final' && pdfBlob && (
-            <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-4 sm:p-8 shadow-2xl border border-purple-500/20 text-center" data-tutorial="download-section">
+            <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-4 sm:p-8 shadow-2xl border border-purple-500/20 text-center">
               <div className="mb-6 sm:mb-8">
                 <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-full p-4 w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 flex items-center justify-center shadow-xl">
                   <Download className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
@@ -632,14 +595,6 @@ const Index = () => {
           )}
         </div>
       </div>
-
-      {/* Tutorial Overlay */}
-      <TutorialOverlay
-        isOpen={isTutorialOpen}
-        onClose={closeTutorial}
-        currentStep={currentStep}
-        onStepChange={setCurrentStep}
-      />
     </div>
   );
 };
