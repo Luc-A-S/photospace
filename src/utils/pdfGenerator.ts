@@ -105,12 +105,22 @@ export const generatePDF = async (images: ImageFile[], photoWidth: number, photo
           }
         });
         
-        // Add footer with custom message
+        // Add header and footer with custom messages
         const totalPages = Math.ceil(totalPhotos / photosPerPage);
         for (let page = 1; page <= totalPages; page++) {
           pdf.setPage(page);
+          
+          // Add header
           pdf.setFontSize(8);
           pdf.setTextColor(100, 100, 100);
+          pdf.text(
+            "Dica ~ Imprima em Papel Fotográfico para preservar suas fotos:",
+            pageWidth / 2,
+            8,
+            { align: 'center' }
+          );
+          
+          // Add footer
           pdf.text(
             "Foto feita com amor por Bazar do Izaias! | PhotoSpace - Cada rosto merece um bom enquadramento.",
             pageWidth / 2,
