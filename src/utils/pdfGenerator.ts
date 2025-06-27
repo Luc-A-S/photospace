@@ -43,13 +43,21 @@ export const generatePDF = async (images: ImageFile[], photoWidth: number, photo
       
       console.log(`Generating PDF with ${totalPhotos} photos from ${images.length} different images`);
       
-      // Load all images first (including the logo)
-      const logoPromise = new Promise<HTMLImageElement>((resolveImg, rejectImg) => {
+      // Load all images first (including both logos)
+      const leftLogoPromise = new Promise<HTMLImageElement>((resolveImg, rejectImg) => {
         const img = new Image();
         img.crossOrigin = 'anonymous';
         img.onload = () => resolveImg(img);
-        img.onerror = () => rejectImg(new Error('Failed to load logo image'));
+        img.onerror = () => rejectImg(new Error('Failed to load left logo image'));
         img.src = '/lovable-uploads/b8ab5e4d-8d4e-4b52-90c8-efde1b1a2621.png';
+      });
+
+      const rightLogoPromise = new Promise<HTMLImageElement>((resolveImg, rejectImg) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => resolveImg(img);
+        img.onerror = () => rejectImg(new Error('Failed to load right logo image'));
+        img.src = '/lovable-uploads/30d82e3b-af01-4385-b545-82313a52f804.png';
       });
       
       const loadPromises = images.map(image => {
@@ -62,7 +70,7 @@ export const generatePDF = async (images: ImageFile[], photoWidth: number, photo
         });
       });
       
-      Promise.all([logoPromise, ...loadPromises]).then(([logoImg, ...loadedImages]) => {
+      Promise.all([leftLogoPromise, rightLogoPromise, ...loadPromises]).then(([leftLogoImg, rightLogoImg, ...loadedImages]) => {
         // Add photos to PDF
         loadedImages.forEach(({ img, quantity }) => {
           for (let i = 0; i < quantity; i++) {
@@ -128,12 +136,15 @@ export const generatePDF = async (images: ImageFile[], photoWidth: number, photo
             { align: 'center' }
           );
           
-          // Add footer with logo and text
+          // Add footer with logos and text
           const footerY = pageHeight - 5;
-          const logoSize = 4; // Size of the logo in mm
+          const logoSize = 4; // Size of the logos in mm
           
-          // Add logo on the left side of footer
-          pdf.addImage(logoImg, 'PNG', margin, footerY - logoSize, logoSize, logoSize);
+          // Add left logo
+          pdf.addImage(leftLogoImg, 'PNG', margin, footerY - logoSize, logoSize, logoSize);
+          
+          // Add right logo
+          pdf.addImage(rightLogoImg, 'PNG', pageWidth - margin - logoSize, footerY - logoSize, logoSize, logoSize);
           
           // Add footer text
           pdf.text(
