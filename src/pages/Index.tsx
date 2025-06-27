@@ -637,6 +637,8 @@ const Index = () => {
       <TutorialOverlay
         isOpen={isTutorialOpen}
         onClose={closeTutorial}
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
       />
     </div>
   );

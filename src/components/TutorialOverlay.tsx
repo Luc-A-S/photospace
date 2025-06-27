@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -15,6 +16,8 @@ interface TutorialStep {
 interface TutorialOverlayProps {
   isOpen: boolean;
   onClose: () => void;
+  currentStep: string;
+  onStepChange: (step: string) => void;
 }
 
 const tutorialSteps: TutorialStep[] = [
@@ -70,7 +73,9 @@ const tutorialSteps: TutorialStep[] = [
 
 const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
   isOpen,
-  onClose
+  onClose,
+  currentStep,
+  onStepChange
 }) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [highlightedElement, setHighlightedElement] = useState<HTMLElement | null>(null);
