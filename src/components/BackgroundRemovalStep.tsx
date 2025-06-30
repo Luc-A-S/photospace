@@ -187,7 +187,7 @@ const BackgroundRemovalStep: React.FC<BackgroundRemovalStepProps> = ({
               >
                 <Upload className="h-4 w-4 mr-2" />
                 {!hasClickedTool 
-                  ? 'Escolha uma ferramenta'
+                  ? 'Escolha Uma Ferramenta'
                   : image.processedUrl 
                     ? 'Trocar Imagem' 
                     : 'Upload Sem Fundo'
