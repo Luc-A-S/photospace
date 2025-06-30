@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, Heart, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -40,6 +40,22 @@ const Index = () => {
   const [isDragOver, setIsDragOver] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load Adsterra script when component mounts
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = '//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js';
+    script.async = true;
+    script.setAttribute('data-cfasync', 'false');
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup script on unmount
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
+    };
+  }, []);
 
   const toggleAnimation = () => {
     setIsAnimationEnabled(prev => !prev);
@@ -564,6 +580,11 @@ const Index = () => {
                   </div>
                 )}
               </div>
+
+              {/* Adsterra Native Banner */}
+              <div className="mt-8 pt-6 border-t border-slate-600/30">
+                <div id="container-2bef587e1910539b0471f8cc71d76425" className="flex justify-center"></div>
+              </div>
             </Card>
           )}
 
@@ -620,6 +641,11 @@ const Index = () => {
                   Baixar PDF
                 </Button>
               </div>
+
+              {/* Adsterra Native Banner */}
+              <div className="mt-8 pt-6 border-t border-slate-600/30">
+                <div id="container-2bef587e1910539b0471f8cc71d76425" className="flex justify-center"></div>
+              </div>
             </Card>
           )}
 
@@ -652,6 +678,11 @@ const Index = () => {
                 <div className="text-xs text-gray-400 mt-6">
                   Criado com ❤️ por Bazar do Izaias
                 </div>
+              </div>
+
+              {/* Adsterra Native Banner */}
+              <div className="mt-8 pt-6 border-t border-slate-600/30">
+                <div id="container-2bef587e1910539b0471f8cc71d76425" className="flex justify-center"></div>
               </div>
             </Card>
           )}
