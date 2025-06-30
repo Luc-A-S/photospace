@@ -352,7 +352,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-x-hidden pb-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-x-hidden pb-4">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-r from-purple-800/20 to-blue-800/20"></div>
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-600/10 via-transparent to-transparent"></div>
@@ -674,12 +674,12 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Fixed Footer with Adsterra Banner - Much smaller */}
-      <div className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-sm border-t border-slate-700/30 z-50">
-        <div className="flex justify-center items-center py-0.5 px-1">
-          <div className="text-center" style={{fontSize: '10px'}}>
+      {/* Fixed Footer with Adsterra Banner - Minimal size */}
+      <div className="fixed bottom-0 left-0 right-0 bg-slate-900/80 backdrop-blur-sm border-t border-slate-700/20 z-50" style={{height: '20px'}}>
+        <div className="flex justify-center items-center h-full px-1">
+          <div className="text-center" style={{fontSize: '8px', lineHeight: '1'}}>
             <script async data-cfasync="false" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
-            <div id="container-2bef587e1910539b0471f8cc71d76425"></div>
+            <div id="container-2bef587e1910539b0471f8cc71d76425" style={{transform: 'scale(0.6)', transformOrigin: 'center'}}></div>
           </div>
         </div>
       </div>
