@@ -47,54 +47,15 @@ const Index = () => {
     script.src = '//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js';
     script.async = true;
     script.setAttribute('data-cfasync', 'false');
-    document.head.appendChild(script);
-
-    // Initialize atOptions
-    window.atOptions = {
-      'key': '2bef587e1910539b0471f8cc71d76425',
-      'format': 'iframe',
-      'height': 60,
-      'width': 468,
-      'params': {}
-    };
+    document.body.appendChild(script);
 
     return () => {
       // Cleanup script on unmount
-      if (document.head.contains(script)) {
-        document.head.removeChild(script);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
       }
     };
   }, []);
-
-  // Force reload ads when step changes
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Trigger ad reload by recreating the invoke call
-      if (window.atOptions) {
-        window.atOptions = {
-          'key': '2bef587e1910539b0471f8cc71d76425',
-          'format': 'iframe',
-          'height': 60,
-          'width': 468,
-          'params': {}
-        };
-        
-        // Try to reload the ad
-        const script = document.createElement('script');
-        script.src = '//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js';
-        script.async = true;
-        document.body.appendChild(script);
-        
-        setTimeout(() => {
-          if (document.body.contains(script)) {
-            document.body.removeChild(script);
-          }
-        }, 1000);
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [currentStep]);
 
   const toggleAnimation = () => {
     setIsAnimationEnabled(prev => !prev);
@@ -716,19 +677,9 @@ const Index = () => {
       {/* Fixed Footer with Adsterra Banner */}
       <div className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-700/50 z-50">
         <div className="flex justify-center items-center py-3 px-4">
-          <div id="adsterra-footer-banner" className="min-h-[60px] flex items-center justify-center">
-            <script type="text/javascript">
-              {`
-                atOptions = {
-                  'key' : '2bef587e1910539b0471f8cc71d76425',
-                  'format' : 'iframe',
-                  'height' : 60,
-                  'width' : 468,
-                  'params' : {}
-                };
-                document.write('<scr' + 'ipt type="text/javascript" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></scr' + 'ipt>');
-              `}
-            </script>
+          <div className="text-center">
+            <script async data-cfasync="false" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
+            <div id="container-2bef587e1910539b0471f8cc71d76425"></div>
           </div>
         </div>
       </div>
