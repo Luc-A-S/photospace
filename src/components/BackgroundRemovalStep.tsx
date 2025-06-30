@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Upload, ExternalLink, ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
@@ -28,10 +28,13 @@ const BackgroundRemovalStep: React.FC<BackgroundRemovalStepProps> = ({
   onContinue
 }) => {
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+  const [hasClickedTool, setHasClickedTool] = useState(false);
 
   const openPhotoRoom = () => {
     const photoRoomUrl = 'https://www.photoroom.com/pt-br/ferramentas/remover-fundo-de-imagem';
     window.open(photoRoomUrl, '_blank');
+    
+    setHasClickedTool(true);
     
     toast({
       title: "PhotoRoom aberto!",
@@ -42,6 +45,8 @@ const BackgroundRemovalStep: React.FC<BackgroundRemovalStepProps> = ({
   const openRemoveBg = () => {
     const removeBgUrl = 'https://www.remove.bg/pt-br';
     window.open(removeBgUrl, '_blank');
+    
+    setHasClickedTool(true);
     
     toast({
       title: "Remove.bg aberto!",
@@ -171,15 +176,23 @@ const BackgroundRemovalStep: React.FC<BackgroundRemovalStepProps> = ({
 
               {/* Upload button */}
               <Button
-                onClick={() => fileInputRefs.current[image.id]?.click()}
+                onClick={() => hasClickedTool && fileInputRefs.current[image.id]?.click()}
+                disabled={!hasClickedTool}
                 className={`w-full ${
-                  image.processedUrl 
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700' 
-                    : 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700'
+                  !hasClickedTool 
+                    ? 'bg-gray-500 cursor-not-allowed opacity-50'
+                    : image.processedUrl 
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700' 
+                      : 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700'
                 } text-white py-2 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105`}
               >
                 <Upload className="h-4 w-4 mr-2" />
-                {image.processedUrl ? 'Trocar Imagem' : 'Upload Sem Fundo'}
+                {!hasClickedTool 
+                  ? 'Clique em uma ferramenta primeiro'
+                  : image.processedUrl 
+                    ? 'Trocar Imagem' 
+                    : 'Upload Sem Fundo'
+                }
               </Button>
 
               <input
