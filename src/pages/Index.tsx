@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, Heart, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -450,7 +451,14 @@ const Index = () => {
         {/* Main Content */}
         <div className="max-w-4xl mx-auto px-2 sm:px-0">
           {currentStep === 'photoType' && (
-            <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
+            <div>
+              <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
+              
+              {/* Adsterra Native Banner */}
+              <div className="mt-8 pt-6">
+                <div id="container-2bef587e1910539b0471f8cc71d76425" className="flex justify-center"></div>
+              </div>
+            </div>
           )}
 
           {currentStep === 'upload' && (
@@ -589,33 +597,54 @@ const Index = () => {
           )}
 
           {currentStep === 'multiEditor' && selectedPhotoType && (
-            <MultiImageEditor
-              images={images}
-              photoType={selectedPhotoType}
-              onImageAdjusted={handleImageAdjusted}
-              onBack={goBack}
-              onContinue={proceedToBackgroundRemoval}
-            />
+            <div>
+              <MultiImageEditor
+                images={images}
+                photoType={selectedPhotoType}
+                onImageAdjusted={handleImageAdjusted}
+                onBack={goBack}
+                onContinue={proceedToBackgroundRemoval}
+              />
+              
+              {/* Adsterra Native Banner */}
+              <div className="mt-8 pt-6">
+                <div id="container-2bef587e1910539b0471f8cc71d76425" className="flex justify-center"></div>
+              </div>
+            </div>
           )}
 
           {currentStep === 'backgroundRemoval' && (
-            <BackgroundRemovalStep
-              images={images}
-              onProcessedImageUpload={handleProcessedImageUpload}
-              onBack={goBack}
-              onContinue={proceedToQuantity}
-            />
+            <div>
+              <BackgroundRemovalStep
+                images={images}
+                onProcessedImageUpload={handleProcessedImageUpload}
+                onBack={goBack}
+                onContinue={proceedToQuantity}
+              />
+              
+              {/* Adsterra Native Banner */}
+              <div className="mt-8 pt-6">
+                <div id="container-2bef587e1910539b0471f8cc71d76425" className="flex justify-center"></div>
+              </div>
+            </div>
           )}
 
           {currentStep === 'quantity' && selectedPhotoType && (
-            <QuantitySelector
-              images={images}
-              photoType={selectedPhotoType}
-              onQuantityUpdate={handleQuantityUpdate}
-              onBack={goBack}
-              onGeneratePDF={generateDocument}
-              isProcessing={isProcessing}
-            />
+            <div>
+              <QuantitySelector
+                images={images}
+                photoType={selectedPhotoType}
+                onQuantityUpdate={handleQuantityUpdate}
+                onBack={goBack}
+                onGeneratePDF={generateDocument}
+                isProcessing={isProcessing}
+              />
+              
+              {/* Adsterra Native Banner */}
+              <div className="mt-8 pt-6">
+                <div id="container-2bef587e1910539b0471f8cc71d76425" className="flex justify-center"></div>
+              </div>
+            </div>
           )}
 
           {currentStep === 'final' && pdfBlob && (
