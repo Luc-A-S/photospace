@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -188,7 +187,7 @@ const BackgroundRemovalStep: React.FC<BackgroundRemovalStepProps> = ({
               >
                 <Upload className="h-4 w-4 mr-2" />
                 {!hasClickedTool 
-                  ? 'Clique em uma ferramenta primeiro'
+                  ? 'Escolha uma ferramenta'
                   : image.processedUrl 
                     ? 'Trocar Imagem' 
                     : 'Upload Sem Fundo'
