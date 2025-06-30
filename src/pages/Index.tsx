@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, Heart, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -57,6 +56,24 @@ const Index = () => {
       }
     };
   }, []);
+
+  // Force reload ads when step changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Trigger ad reload by recreating the invoke call
+      if (window.atOptions) {
+        window.atOptions = {
+          'key': '2bef587e1910539b0471f8cc71d76425',
+          'format': 'iframe',
+          'height': 60,
+          'width': 468,
+          'params': {}
+        };
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [currentStep]);
 
   const toggleAnimation = () => {
     setIsAnimationEnabled(prev => !prev);
@@ -456,7 +473,20 @@ const Index = () => {
               
               {/* Adsterra Native Banner */}
               <div className="mt-8 pt-6">
-                <div id="container-2bef587e1910539b0471f8cc71d76425" className="flex justify-center"></div>
+                <div id="container-2bef587e1910539b0471f8cc71d76425-photoType" className="flex justify-center min-h-[60px]">
+                  <script type="text/javascript">
+                    {`
+                      atOptions = {
+                        'key' : '2bef587e1910539b0471f8cc71d76425',
+                        'format' : 'iframe',
+                        'height' : 60,
+                        'width' : 468,
+                        'params' : {}
+                      };
+                    `}
+                  </script>
+                  <script type="text/javascript" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
+                </div>
               </div>
             </div>
           )}
@@ -591,7 +621,20 @@ const Index = () => {
 
               {/* Adsterra Native Banner */}
               <div className="mt-8 pt-6 border-t border-slate-600/30">
-                <div id="container-2bef587e1910539b0471f8cc71d76425" className="flex justify-center"></div>
+                <div id="container-2bef587e1910539b0471f8cc71d76425-upload" className="flex justify-center min-h-[60px]">
+                  <script type="text/javascript">
+                    {`
+                      atOptions = {
+                        'key' : '2bef587e1910539b0471f8cc71d76425',
+                        'format' : 'iframe',
+                        'height' : 60,
+                        'width' : 468,
+                        'params' : {}
+                      };
+                    `}
+                  </script>
+                  <script type="text/javascript" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
+                </div>
               </div>
             </Card>
           )}
@@ -608,7 +651,20 @@ const Index = () => {
               
               {/* Adsterra Native Banner */}
               <div className="mt-8 pt-6">
-                <div id="container-2bef587e1910539b0471f8cc71d76425" className="flex justify-center"></div>
+                <div id="container-2bef587e1910539b0471f8cc71d76425-multiEditor" className="flex justify-center min-h-[60px]">
+                  <script type="text/javascript">
+                    {`
+                      atOptions = {
+                        'key' : '2bef587e1910539b0471f8cc71d76425',
+                        'format' : 'iframe',
+                        'height' : 60,
+                        'width' : 468,
+                        'params' : {}
+                      };
+                    `}
+                  </script>
+                  <script type="text/javascript" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
+                </div>
               </div>
             </div>
           )}
@@ -624,7 +680,20 @@ const Index = () => {
               
               {/* Adsterra Native Banner */}
               <div className="mt-8 pt-6">
-                <div id="container-2bef587e1910539b0471f8cc71d76425" className="flex justify-center"></div>
+                <div id="container-2bef587e1910539b0471f8cc71d76425-backgroundRemoval" className="flex justify-center min-h-[60px]">
+                  <script type="text/javascript">
+                    {`
+                      atOptions = {
+                        'key' : '2bef587e1910539b0471f8cc71d76425',
+                        'format' : 'iframe',
+                        'height' : 60,
+                        'width' : 468,
+                        'params' : {}
+                      };
+                    `}
+                  </script>
+                  <script type="text/javascript" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
+                </div>
               </div>
             </div>
           )}
@@ -642,7 +711,20 @@ const Index = () => {
               
               {/* Adsterra Native Banner */}
               <div className="mt-8 pt-6">
-                <div id="container-2bef587e1910539b0471f8cc71d76425" className="flex justify-center"></div>
+                <div id="container-2bef587e1910539b0471f8cc71d76425-quantity" className="flex justify-center min-h-[60px]">
+                  <script type="text/javascript">
+                    {`
+                      atOptions = {
+                        'key' : '2bef587e1910539b0471f8cc71d76425',
+                        'format' : 'iframe',
+                        'height' : 60,
+                        'width' : 468,
+                        'params' : {}
+                      };
+                    `}
+                  </script>
+                  <script type="text/javascript" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
+                </div>
               </div>
             </div>
           )}
@@ -673,7 +755,20 @@ const Index = () => {
 
               {/* Adsterra Native Banner */}
               <div className="mt-8 pt-6 border-t border-slate-600/30">
-                <div id="container-2bef587e1910539b0471f8cc71d76425" className="flex justify-center"></div>
+                <div id="container-2bef587e1910539b0471f8cc71d76425-final" className="flex justify-center min-h-[60px]">
+                  <script type="text/javascript">
+                    {`
+                      atOptions = {
+                        'key' : '2bef587e1910539b0471f8cc71d76425',
+                        'format' : 'iframe',
+                        'height' : 60,
+                        'width' : 468,
+                        'params' : {}
+                      };
+                    `}
+                  </script>
+                  <script type="text/javascript" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
+                </div>
               </div>
             </Card>
           )}
@@ -711,7 +806,20 @@ const Index = () => {
 
               {/* Adsterra Native Banner */}
               <div className="mt-8 pt-6 border-t border-slate-600/30">
-                <div id="container-2bef587e1910539b0471f8cc71d76425" className="flex justify-center"></div>
+                <div id="container-2bef587e1910539b0471f8cc71d76425-thanks" className="flex justify-center min-h-[60px]">
+                  <script type="text/javascript">
+                    {`
+                      atOptions = {
+                        'key' : '2bef587e1910539b0471f8cc71d76425',
+                        'format' : 'iframe',
+                        'height' : 60,
+                        'width' : 468,
+                        'params' : {}
+                      };
+                    `}
+                  </script>
+                  <script type="text/javascript" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
+                </div>
               </div>
             </Card>
           )}
