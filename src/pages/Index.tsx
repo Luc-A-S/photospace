@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, CircleDollarSign, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -661,7 +662,7 @@ const Index = () => {
             <Card className="bg-slate-800/40 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl border border-purple-500/20 text-center">
               <div className="mb-4 sm:mb-6 md:mb-8">
                 <div className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-3 sm:p-4 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto mb-4 sm:mb-6 flex items-center justify-center shadow-xl">
-                  <Heart className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 text-white" />
+                  <CircleDollarSign className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 text-white" />
                 </div>
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3 sm:mb-4 px-2">
                   Obrigado por usar o PhotoSpace!
