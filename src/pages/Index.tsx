@@ -65,6 +65,10 @@ const Index = () => {
     });
   };
 
+  const handleSupportClick = () => {
+    window.open('https://craptroopstammer.com/y7mf0ipu?key=14c7bd000f8223e76c05c6ec461fc175', '_blank');
+  };
+
   const handlePhotoTypeSelect = (photoType: PhotoType) => {
     console.log('Photo type selected:', photoType);
     
@@ -441,12 +445,23 @@ const Index = () => {
           <p className="text-xs sm:text-sm text-purple-300/80 mb-2 sm:mb-3 font-medium">
             Criado com ❤️ por Bazar do Izaias
           </p>
-          <p className="text-xs sm:text-sm md:text-lg text-gray-300 max-w-2xl mx-auto px-2 sm:px-4 leading-relaxed">
+          <p className="text-xs sm:text-sm md:text-lg text-gray-300 max-w-2xl mx-auto px-2 sm:px-4 leading-relaxed mb-4">
             {selectedPhotoType ? 
               `Criando ${selectedPhotoType.name} (${selectedPhotoType.dimensions}) - Prepare, Ajuste, Imprima, e Pronto!` :
               'Prepare, Ajuste, Imprima, e Pronto!'
             }
           </p>
+          
+          {/* Support Button */}
+          <div className="flex justify-center">
+            <Button
+              onClick={handleSupportClick}
+              className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
+            >
+              <Heart className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+              Apoie
+            </Button>
+          </div>
         </div>
 
         {/* Main Content */}
