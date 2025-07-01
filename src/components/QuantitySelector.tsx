@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -77,68 +78,71 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
         </p>
       </div>
 
-      {/* Images with quantity controls */}
+      {/* Images with quantity controls - Centralized layout */}
       <div className="space-y-6 mb-8">
         {images.map((image, index) => (
-          <div key={image.id} className="bg-slate-700/50 rounded-2xl p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-              {/* Image preview */}
-              <div className="flex-shrink-0">
-                <div className="text-center mb-2">
-                  <h3 className="text-white font-medium">Imagem {index + 1}</h3>
+          <div key={image.id} className="bg-slate-700/50 rounded-2xl p-6">
+            {/* Centralized container for image and controls */}
+            <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+              {/* Image preview - Centralized */}
+              <div className="flex-shrink-0 text-center">
+                <div className="mb-4">
+                  <h3 className="text-white font-medium text-lg">Imagem {index + 1}</h3>
                 </div>
-                <div className="bg-gray-200 rounded-xl p-2">
+                <div className="bg-gray-200 rounded-xl p-3 mx-auto inline-block">
                   <img
                     src={image.processedUrl}
                     alt={`Processada ${index + 1}`}
-                    className="w-24 h-32 sm:w-32 sm:h-42 object-cover rounded-lg"
+                    className="w-32 h-42 sm:w-40 sm:h-52 object-cover rounded-lg shadow-lg"
                   />
                 </div>
               </div>
 
-              {/* Quantity controls */}
-              <div className="flex-1 w-full sm:w-auto">
-                <Label className="text-base font-medium text-white mb-3 block text-center sm:text-left">
-                  Quantidade de cópias
-                </Label>
-                
-                <div className="flex items-center justify-center sm:justify-start gap-3">
-                  <Button
-                    onClick={() => updateQuantity(image.id, image.quantity - 1)}
-                    disabled={image.quantity <= 1}
-                    size="sm"
-                    className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-gray-500 disabled:to-gray-600 text-white w-10 h-10 rounded-full p-0"
-                  >
-                    <Minus className="h-4 w-4" />
-                  </Button>
+              {/* Quantity controls - Centralized and better spaced */}
+              <div className="flex-1 max-w-md">
+                <div className="text-center mb-6">
+                  <Label className="text-lg font-medium text-white block mb-4">
+                    Quantidade de cópias
+                  </Label>
                   
-                  <div className="mx-4">
-                    <Input
-                      type="number"
-                      min="1"
-                      max="50"
-                      value={image.quantity}
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value) || 1;
-                        updateQuantity(image.id, value);
-                      }}
-                      className="w-20 text-center text-lg font-medium rounded-xl border-2 border-purple-400/30 bg-slate-600 text-white focus:border-purple-500"
-                    />
+                  <div className="flex items-center justify-center gap-6">
+                    <Button
+                      onClick={() => updateQuantity(image.id, image.quantity - 1)}
+                      disabled={image.quantity <= 1}
+                      size="lg"
+                      className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-gray-500 disabled:to-gray-600 text-white w-12 h-12 rounded-full p-0 shadow-lg transition-all duration-300 hover:scale-110"
+                    >
+                      <Minus className="h-5 w-5" />
+                    </Button>
+                    
+                    <div className="mx-2">
+                      <Input
+                        type="number"
+                        min="1"
+                        max="50"
+                        value={image.quantity}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value) || 1;
+                          updateQuantity(image.id, value);
+                        }}
+                        className="w-24 h-12 text-center text-xl font-bold rounded-xl border-2 border-purple-400/30 bg-slate-600 text-white focus:border-purple-500 shadow-lg"
+                      />
+                    </div>
+                    
+                    <Button
+                      onClick={() => updateQuantity(image.id, image.quantity + 1)}
+                      disabled={image.quantity >= 50}
+                      size="lg"
+                      className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-500 disabled:to-gray-600 text-white w-12 h-12 rounded-full p-0 shadow-lg transition-all duration-300 hover:scale-110"
+                    >
+                      <Plus className="h-5 w-5" />
+                    </Button>
                   </div>
                   
-                  <Button
-                    onClick={() => updateQuantity(image.id, image.quantity + 1)}
-                    disabled={image.quantity >= 50}
-                    size="sm"
-                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-500 disabled:to-gray-600 text-white w-10 h-10 rounded-full p-0"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
+                  <p className="text-sm text-gray-400 text-center mt-4">
+                    Esta imagem será repetida {image.quantity} vez{image.quantity !== 1 ? 'es' : ''} no PDF
+                  </p>
                 </div>
-                
-                <p className="text-xs sm:text-sm text-gray-400 text-center sm:text-left mt-2">
-                  Esta imagem será repetida {image.quantity} vez{image.quantity !== 1 ? 'es' : ''} no PDF
-                </p>
               </div>
             </div>
           </div>
