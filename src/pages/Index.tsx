@@ -324,14 +324,16 @@ const Index = () => {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       
-      // Avançar para tela de agradecimento após download
-      setCurrentStep('thanks');
-      
       toast({
         title: "Download iniciado!",
         description: "O PDF foi baixado com sucesso."
       });
     }
+  };
+
+  const downloadPDFAndGoToThanks = () => {
+    downloadPDF();
+    setCurrentStep('thanks');
   };
 
   const resetApp = () => {
@@ -645,7 +647,7 @@ const Index = () => {
 
             <div className="flex justify-center">
               <Button
-                onClick={downloadPDF}
+                onClick={downloadPDFAndGoToThanks}
                 className="neon-button w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105"
               >
                 <Download className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-2" />
@@ -674,12 +676,22 @@ const Index = () => {
             </div>
 
             <div className="space-y-3 sm:space-y-4">
-              <Button
-                onClick={resetApp}
-                className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg sm:rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105"
-              >
-                Criar Outro PDF
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                <Button
+                  onClick={downloadPDF}
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105"
+                >
+                  <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                  Baixar Novamente
+                </Button>
+                
+                <Button
+                  onClick={resetApp}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105"
+                >
+                  Criar Outro PDF
+                </Button>
+              </div>
               
               <div className="text-xs text-gray-400 mt-4 sm:mt-6">
                 Criado com ❤️ por Bazar do Izaias
