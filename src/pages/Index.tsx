@@ -715,7 +715,7 @@ const Index = () => {
             <div className="text-center w-full max-w-screen-lg mx-auto">
               {isMobile ? (
                 <>
-                  <script async="async" data-cfasync="false" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
+                  <script async data-cfasync="false" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
                   <div id="container-2bef587e1910539b0471f8cc71d76425"></div>
                 </>
               ) : (
