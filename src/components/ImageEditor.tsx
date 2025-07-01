@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -34,7 +33,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   downloadButtonText
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [zoom, setZoom] = useState([0.20]); // Alterado para 0.20x (valor inicial preciso)
+  const [zoom, setZoom] = useState([0.20]);
   
   const [brightness, setBrightness] = useState([115]);
   const [contrast, setContrast] = useState([85]);
@@ -174,7 +173,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     img.onload = async () => {
       setImage(img);
       const scale = Math.min(canvasWidth / img.naturalWidth, canvasHeight / img.naturalHeight) * 2.5;
-      setZoom([0.20]); // Definido como 0.20x por padrão (valor preciso)
+      setZoom([0.20]);
       
       if (!autoPositioned) {
         setPosition({ x: -35, y: 145 });
@@ -216,7 +215,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     ctx.translate(canvas.width / 2, canvas.height / 2);
     ctx.rotate((rotation * Math.PI) / 180);
     
-    // Apply flips
     const scaleX = flipHorizontal ? -1 : 1;
     const scaleY = flipVertical ? -1 : 1;
     ctx.scale(zoom[0] * scaleX, zoom[0] * scaleY);
@@ -330,254 +328,257 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     setAutoPositioned(false);
     
     if (image) {
-      setZoom([0.20]); // Definido como 0.20x por padrão (valor preciso)
+      setZoom([0.20]);
     }
   };
 
   return (
-    <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-4 sm:p-8 shadow-2xl border border-purple-500/20">
-      <div className="text-center mb-4 sm:mb-6">
-        {showBackButton && (
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
-            <Button
-              onClick={onBack}
-              className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Voltar
-            </Button>
-            <div className="text-center flex-1">
-              <h2 className="text-xl sm:text-2xl font-semibold text-white text-center">
-                Ajustar {photoType.name}
-              </h2>
-              <div className="text-sm text-purple-300 bg-purple-500/20 rounded-lg px-3 py-1 inline-block mt-2">
-                {photoType.dimensions}
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-purple-500/20 w-full max-w-7xl">
+        <div className="text-center mb-6">
+          {showBackButton && (
+            <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+              <Button
+                onClick={onBack}
+                className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Voltar
+              </Button>
+              <div className="text-center flex-1">
+                <h2 className="text-2xl font-semibold text-white text-center">
+                  Ajustar {photoType.name}
+                </h2>
+                <div className="text-sm text-purple-300 bg-purple-500/20 rounded-lg px-3 py-1 inline-block mt-2">
+                  {photoType.dimensions}
+                </div>
               </div>
+              <div className="hidden sm:block w-[100px]"></div>
             </div>
-            <div className="hidden sm:block w-[100px]"></div>
-          </div>
-        )}
-        <p className="text-gray-300 mb-4 text-sm sm:text-base px-2">
-          {autoPositioned ? 
-            '✨ Posicionamento automático aplicado! Ajuste conforme necessário.' : 
-            'Use os controles para posicionar e ajustar sua foto na proporção ' + photoType.dimensions
-          }
-        </p>
-      </div>
-
-      <div className="flex flex-col lg:flex-row gap-4 sm:gap-8 items-start">
-        {/* Canvas Preview */}
-        <div className="flex-shrink-0 w-full lg:w-auto flex flex-col items-center">
-          <div className="bg-slate-700/50 rounded-2xl p-3 sm:p-4 shadow-xl mb-4">
-            <canvas
-              ref={canvasRef}
-              className="border-2 border-purple-400/30 rounded-xl cursor-move"
-              style={{
-                width: `${displayWidth}px`,
-                height: `${displayHeight}px`,
-                imageRendering: 'auto'
-              }}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-              onWheel={handleWheel}
-            />
-          </div>
-
-          {/* Download button below the photo */}
-          <Button
-            onClick={handleDownload}
-            className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white py-3 px-6 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
-          >
-            <Download className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-            {downloadButtonText || `Baixar ${photoType.name} Ajustada`}
-          </Button>
-        </div>
-
-        {/* Controls */}
-        <div className="flex-1 space-y-4 sm:space-y-6 max-w-md max-h-[500px] sm:max-h-[600px] overflow-y-auto w-full">
-          <p className="text-xs text-gray-400 text-center lg:hidden">
-            Clique e arraste para mover • Use a roda do mouse para zoom
+          )}
+          <p className="text-gray-300 mb-6 text-base">
+            {autoPositioned ? 
+              '✨ Posicionamento automático aplicado! Ajuste conforme necessário.' : 
+              'Use os controles para posicionar e ajustar sua foto na proporção ' + photoType.dimensions
+            }
           </p>
-          
-          <div className="bg-slate-700/30 rounded-xl p-3 sm:p-4">
-            <label className="block text-sm font-medium text-white mb-2">
-              Zoom
-            </label>
-            <Slider
-              value={zoom}
-              onValueChange={setZoom}
-              min={0.1}
-              max={5}
-              step={0.01}
-              className="w-full"
-            />
-            <div className="text-xs text-gray-400 mt-1">
-              {zoom[0].toFixed(2)}x
+        </div>
+
+        <div className="flex flex-col xl:flex-row gap-8 items-center justify-center">
+          {/* Canvas Preview - Centralizado */}
+          <div className="flex flex-col items-center justify-center">
+            <div className="bg-slate-700/50 rounded-2xl p-6 shadow-xl mb-6">
+              <canvas
+                ref={canvasRef}
+                className="border-2 border-purple-400/30 rounded-xl cursor-move"
+                style={{
+                  width: `${displayWidth}px`,
+                  height: `${displayHeight}px`,
+                  imageRendering: 'auto'
+                }}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onWheel={handleWheel}
+              />
             </div>
+
+            {/* Download button centralizado abaixo da foto */}
+            <Button
+              onClick={handleDownload}
+              className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white py-4 px-8 rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 text-lg"
+            >
+              <Download className="h-5 w-5 mr-3" />
+              {downloadButtonText || `Baixar ${photoType.name} Ajustada`}
+            </Button>
           </div>
 
-          <div className="bg-slate-700/30 rounded-xl p-3 sm:p-4">
-            <div className="space-y-3 sm:space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-white mb-2">
-                  Posição X
-                </label>
-                <Slider
-                  value={positionX}
-                  onValueChange={setPositionX}
-                  min={-200}
-                  max={200}
-                  step={1}
-                  className="w-full"
-                />
-                <div className="text-xs text-gray-400 mt-1">
-                  {positionX[0]}px
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-white mb-2">
-                  Posição Y
-                </label>
-                <Slider
-                  value={positionY}
-                  onValueChange={setPositionY}
-                  min={-200}
-                  max={200}
-                  step={1}
-                  className="w-full"
-                />
-                <div className="text-xs text-gray-400 mt-1">
-                  {positionY[0]}px
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-slate-700/30 rounded-xl p-3 sm:p-4">
-            <div className="flex items-center gap-2 mb-4">
-              <Sun className="h-4 w-4 text-yellow-400" />
-              <h3 className="text-base sm:text-lg font-medium text-white">Iluminação</h3>
-            </div>
-            
-            <div className="space-y-3 sm:space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Brilho
-                </label>
-                <Slider
-                  value={brightness}
-                  onValueChange={setBrightness}
-                  min={50}
-                  max={150}
-                  step={1}
-                  className="w-full"
-                />
-                <div className="text-xs text-gray-400 mt-1">
-                  {brightness[0]}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Contraste
-                </label>
-                <Slider
-                  value={contrast}
-                  onValueChange={setContrast}
-                  min={0}
-                  max={200}
-                  step={1}
-                  className="w-full"
-                />
-                <div className="text-xs text-gray-400 mt-1">
-                  {contrast[0]}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-slate-700/30 rounded-xl p-3 sm:p-4">
-            <div className="flex items-center gap-2 mb-4">
-              <Palette className="h-4 w-4 text-purple-400" />
-              <h3 className="text-base sm:text-lg font-medium text-white">Cor</h3>
-            </div>
-            
-            <div className="space-y-3 sm:space-y-4">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="invert-colors" className="text-sm font-medium text-gray-300">
-                  Inverter Cor
-                </Label>
-                <Switch
-                  id="invert-colors"
-                  checked={invertColors}
-                  onCheckedChange={setInvertColors}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Saturação
-                </label>
-                <Slider
-                  value={saturation}
-                  onValueChange={setSaturation}
-                  min={0}
-                  max={200}
-                  step={1}
-                  className="w-full"
-                />
-                <div className="text-xs text-gray-400 mt-1">
-                  {saturation[0]}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-3 sm:space-y-4">
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
-              <Button
-                onClick={rotateImage}
-                className="bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
-              >
-                <RotateCw className="h-4 w-4 mr-1 sm:mr-2" />
-                Girar 90°
-              </Button>
-              
-              <Button
-                onClick={resetPosition}
-                className="bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base"
-              >
-                <Move className="h-4 w-4 mr-1 sm:mr-2" />
-                Resetar
-              </Button>
-
-              <Button
-                onClick={toggleFlipHorizontal}
-                className={`${flipHorizontal ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-gray-500 to-gray-600'} hover:opacity-80 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base`}
-              >
-                <FlipHorizontal className="h-4 w-4 mr-1 sm:mr-2" />
-                Flip H
-              </Button>
-
-              <Button
-                onClick={toggleFlipVertical}
-                className={`${flipVertical ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-gray-500 to-gray-600'} hover:opacity-80 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base`}
-              >
-                <FlipVertical className="h-4 w-4 mr-1 sm:mr-2" />
-                Flip V
-              </Button>
-            </div>
-
-            <p className="text-xs sm:text-sm text-gray-400 text-center px-2">
-              Após baixar, use o PhotoRoom para remover o fundo e depois faça upload da imagem processada
+          {/* Controls - Centralizados e melhor distribuídos */}
+          <div className="flex-1 max-w-md space-y-6">
+            <p className="text-sm text-gray-400 text-center xl:hidden">
+              Clique e arraste para mover • Use a roda do mouse para zoom
             </p>
+            
+            <div className="bg-slate-700/30 rounded-xl p-4">
+              <label className="block text-lg font-medium text-white mb-3 text-center">
+                Zoom
+              </label>
+              <Slider
+                value={zoom}
+                onValueChange={setZoom}
+                min={0.1}
+                max={5}
+                step={0.01}
+                className="w-full"
+              />
+              <div className="text-sm text-gray-400 mt-2 text-center">
+                {zoom[0].toFixed(2)}x
+              </div>
+            </div>
+
+            <div className="bg-slate-700/30 rounded-xl p-4">
+              <h3 className="text-lg font-medium text-white mb-4 text-center">Posicionamento</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2 text-center">
+                    Posição X
+                  </label>
+                  <Slider
+                    value={positionX}
+                    onValueChange={setPositionX}
+                    min={-200}
+                    max={200}
+                    step={1}
+                    className="w-full"
+                  />
+                  <div className="text-sm text-gray-400 mt-1 text-center">
+                    {positionX[0]}px
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2 text-center">
+                    Posição Y
+                  </label>
+                  <Slider
+                    value={positionY}
+                    onValueChange={setPositionY}
+                    min={-200}
+                    max={200}
+                    step={1}
+                    className="w-full"
+                  />
+                  <div className="text-sm text-gray-400 mt-1 text-center">
+                    {positionY[0]}px
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-700/30 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-4 justify-center">
+                <Sun className="h-5 w-5 text-yellow-400" />
+                <h3 className="text-lg font-medium text-white">Iluminação</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2 text-center">
+                    Brilho
+                  </label>
+                  <Slider
+                    value={brightness}
+                    onValueChange={setBrightness}
+                    min={50}
+                    max={150}
+                    step={1}
+                    className="w-full"
+                  />
+                  <div className="text-sm text-gray-400 mt-1 text-center">
+                    {brightness[0]}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2 text-center">
+                    Contraste
+                  </label>
+                  <Slider
+                    value={contrast}
+                    onValueChange={setContrast}
+                    min={0}
+                    max={200}
+                    step={1}
+                    className="w-full"
+                  />
+                  <div className="text-sm text-gray-400 mt-1 text-center">
+                    {contrast[0]}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-700/30 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-4 justify-center">
+                <Palette className="h-5 w-5 text-purple-400" />
+                <h3 className="text-lg font-medium text-white">Cor</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="invert-colors" className="text-sm font-medium text-gray-300">
+                    Inverter Cor
+                  </Label>
+                  <Switch
+                    id="invert-colors"
+                    checked={invertColors}
+                    onCheckedChange={setInvertColors}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2 text-center">
+                    Saturação
+                  </label>
+                  <Slider
+                    value={saturation}
+                    onValueChange={setSaturation}
+                    min={0}
+                    max={200}
+                    step={1}
+                    className="w-full"
+                  />
+                  <div className="text-sm text-gray-400 mt-1 text-center">
+                    {saturation[0]}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  onClick={rotateImage}
+                  className="bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105"
+                >
+                  <RotateCw className="h-4 w-4 mr-2" />
+                  Girar 90°
+                </Button>
+                
+                <Button
+                  onClick={resetPosition}
+                  className="bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105"
+                >
+                  <Move className="h-4 w-4 mr-2" />
+                  Resetar
+                </Button>
+
+                <Button
+                  onClick={toggleFlipHorizontal}
+                  className={`${flipHorizontal ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-gray-500 to-gray-600'} hover:opacity-80 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105`}
+                >
+                  <FlipHorizontal className="h-4 w-4 mr-2" />
+                  Flip H
+                </Button>
+
+                <Button
+                  onClick={toggleFlipVertical}
+                  className={`${flipVertical ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-gray-500 to-gray-600'} hover:opacity-80 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105`}
+                >
+                  <FlipVertical className="h-4 w-4 mr-2" />
+                  Flip V
+                </Button>
+              </div>
+
+              <p className="text-sm text-gray-400 text-center px-2">
+                Após baixar, use o PhotoRoom para remover o fundo e depois faça upload da imagem processada
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </div>
   );
 };
 
