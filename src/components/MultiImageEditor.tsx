@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Upload, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Download, ArrowLeft, ArrowRight } from 'lucide-react';
 import ImageEditor from '@/components/ImageEditor';
 
 interface PhotoType {
@@ -24,39 +24,25 @@ interface ImageFile {
 }
 
 interface MultiImageEditorProps {
+  images: ImageFile[];
   photoType: PhotoType;
-  onImagesProcessed: (processedImages: ImageFile[]) => void;
+  onImageAdjusted: (imageId: string, adjustedUrl: string) => void;
   onBack: () => void;
+  onContinue: () => void;
 }
 
 const MultiImageEditor: React.FC<MultiImageEditorProps> = ({
+  images,
   photoType,
-  onImagesProcessed,
-  onBack
+  onImageAdjusted,
+  onBack,
+  onContinue
 }) => {
-  const [images, setImages] = useState<ImageFile[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const currentImage = images[currentImageIndex];
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    
-    const newImages: ImageFile[] = files.map((file) => ({
-      id: Math.random().toString(36).substr(2, 9),
-      file,
-      url: URL.createObjectURL(file),
-      quantity: 1
-    }));
-    
-    setImages(prev => [...prev, ...newImages]);
-  };
-
   const handleImageAdjusted = (adjustedImageUrl: string) => {
-    setImages(prev => prev.map(img => 
-      img.id === currentImage.id 
-        ? { ...img, adjustedUrl: adjustedImageUrl }
-        : img
-    ));
+    onImageAdjusted(currentImage.id, adjustedImageUrl);
   };
 
   const goToNextImage = () => {
@@ -71,57 +57,8 @@ const MultiImageEditor: React.FC<MultiImageEditorProps> = ({
     }
   };
 
-  const handleContinue = () => {
-    onImagesProcessed(images);
-  };
-
   const adjustedCount = images.filter(img => img.adjustedUrl).length;
-  const allAdjusted = adjustedCount === images.length && images.length > 0;
-
-  if (images.length === 0) {
-    return (
-      <Card className="bg-slate-800/40 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-purple-500/20">
-        <div className="text-center space-y-6">
-          <Button
-            onClick={onBack}
-            className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 mb-6"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar
-          </Button>
-          
-          <div className="bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl p-4 w-16 h-16 mx-auto mb-6">
-            <Upload className="h-8 w-8 text-white" />
-          </div>
-          
-          <h2 className="text-2xl font-semibold text-white mb-4">
-            Envie suas Imagens
-          </h2>
-          
-          <div className="text-sm text-purple-300 bg-purple-500/20 rounded-lg px-3 py-1 inline-block mb-6">
-            {photoType.name} ({photoType.dimensions})
-          </div>
-          
-          <div className="border-2 border-dashed border-purple-400/30 rounded-2xl p-8 hover:border-purple-400/50 transition-colors">
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleFileUpload}
-              className="hidden"
-              id="file-upload"
-            />
-            <label htmlFor="file-upload" className="cursor-pointer">
-              <div className="text-center">
-                <p className="text-gray-300 mb-2">Clique para selecionar ou arraste as imagens aqui</p>
-                <p className="text-sm text-gray-400">Suporte para múltiplas imagens (JPG, PNG)</p>
-              </div>
-            </label>
-          </div>
-        </div>
-      </Card>
-    );
-  }
+  const allAdjusted = adjustedCount === images.length;
 
   return (
     <div className="space-y-6">
@@ -149,7 +86,7 @@ const MultiImageEditor: React.FC<MultiImageEditorProps> = ({
           </div>
           
           <Button
-            onClick={handleContinue}
+            onClick={onContinue}
             disabled={!allAdjusted}
             className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-500 disabled:to-gray-600 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
           >
