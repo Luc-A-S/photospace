@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, CircleDollarSign, Play, Pause, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ import PhotoTypeSelector from '@/components/PhotoTypeSelector';
 import MultiImageEditor from '@/components/MultiImageEditor';
 import BackgroundRemovalStep from '@/components/BackgroundRemovalStep';
 import QuantitySelector from '@/components/QuantitySelector';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PhotoType {
   id: string;
@@ -39,6 +39,7 @@ const Index = () => {
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
   const [isDragOver, setIsDragOver] = useState(false);
+  const isMobile = useIsMobile();
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -708,20 +709,20 @@ const Index = () => {
           </Card>
         )}
 
-        {/* Adsterra Banner - Now integrated in the normal flow */}
+        {/* Adsterra Banner - Now with responsive layout */}
         <div className="mt-8 sm:mt-12 mb-6 sm:mb-8">
           <div className="flex justify-center items-center py-4 sm:py-6">
             <div className="text-center w-full max-w-screen-lg mx-auto">
               <script async data-cfasync="false" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
               <div 
                 id="container-2bef587e1910539b0471f8cc71d76425" 
-                className="
-                  scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-90 xl:scale-100
-                  transform origin-center
-                  max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] xl:max-w-[728px]
-                  mx-auto
-                  overflow-hidden
-                "
+                className={`
+                  transform origin-center mx-auto overflow-hidden
+                  ${isMobile 
+                    ? 'grid grid-cols-2 grid-rows-2 gap-2 max-w-[320px] scale-75' 
+                    : 'scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-90 xl:scale-100 max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] xl:max-w-[728px]'
+                  }
+                `}
               ></div>
             </div>
           </div>
