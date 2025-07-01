@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, CircleDollarSign, Play, Pause, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -454,15 +455,22 @@ const Index = () => {
             }
           </p>
           
-          {/* Support Button */}
-          <div className="flex justify-center">
+          {/* Support Button with Neon Pulse */}
+          <div className="flex flex-col justify-center items-center gap-2">
             <Button
               onClick={handleSupportClick}
-              className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
+              className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0 animate-pulse relative overflow-hidden"
+              style={{
+                boxShadow: '0 0 20px rgba(234, 179, 8, 0.6), 0 0 40px rgba(234, 179, 8, 0.4), 0 0 60px rgba(234, 179, 8, 0.2)',
+                animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+              }}
             >
               <CircleDollarSign className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
               Apoie
             </Button>
+            <p className="text-xs text-gray-400 font-medium">
+              Sem gastar nada
+            </p>
           </div>
         </div>
 
