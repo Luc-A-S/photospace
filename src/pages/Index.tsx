@@ -709,21 +709,24 @@ const Index = () => {
           </Card>
         )}
 
-        {/* Adsterra Banner - Now with responsive layout */}
+        {/* Adsterra Banner - Different code for mobile vs desktop */}
         <div className="mt-8 sm:mt-12 mb-6 sm:mb-8">
           <div className="flex justify-center items-center py-4 sm:py-6">
             <div className="text-center w-full max-w-screen-lg mx-auto">
-              <script async data-cfasync="false" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
-              <div 
-                id="container-2bef587e1910539b0471f8cc71d76425" 
-                className={`
-                  transform origin-center mx-auto overflow-hidden
-                  ${isMobile 
-                    ? 'grid grid-cols-2 grid-rows-2 gap-2 max-w-[320px] scale-75' 
-                    : 'scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-90 xl:scale-100 max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] xl:max-w-[728px]'
-                  }
-                `}
-              ></div>
+              {isMobile ? (
+                <>
+                  <script async="async" data-cfasync="false" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
+                  <div id="container-2bef587e1910539b0471f8cc71d76425"></div>
+                </>
+              ) : (
+                <>
+                  <script async data-cfasync="false" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
+                  <div 
+                    id="container-2bef587e1910539b0471f8cc71d76425" 
+                    className="scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-90 xl:scale-100 transform origin-center max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] xl:max-w-[728px] mx-auto overflow-hidden"
+                  ></div>
+                </>
+              )}
             </div>
           </div>
         </div>
