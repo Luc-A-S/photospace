@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, CircleDollarSign, Play, Pause, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -447,7 +448,7 @@ const Index = () => {
             PhotoSpace
           </h1>
           <p className="text-xs sm:text-sm text-purple-300/80 mb-2 sm:mb-3 font-medium">
-            Criado com ❤️ por Bazar do Izaias
+            Criado com 🤍 por Bazar do Izaias
           </p>
           <p className="text-xs sm:text-sm md:text-lg text-gray-300 max-w-2xl mx-auto px-2 sm:px-4 leading-relaxed mb-4">
             {selectedPhotoType ? 
@@ -703,7 +704,7 @@ const Index = () => {
               </div>
               
               <div className="text-xs text-gray-400 mt-4 sm:mt-6">
-                Criado com ❤️ por Bazar do Izaias
+                Criado com 🤍 por Bazar do Izaias
               </div>
             </div>
           </Card>
