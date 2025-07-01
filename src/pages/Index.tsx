@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, CircleDollarSign, Play, Pause, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -357,7 +356,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-x-hidden pb-16 sm:pb-20 md:pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-x-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-r from-purple-800/20 to-blue-800/20"></div>
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-600/10 via-transparent to-transparent"></div>
@@ -466,247 +465,245 @@ const Index = () => {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-4xl mx-auto px-1 sm:px-2 md:px-0">
-          {currentStep === 'photoType' && (
-            <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
-          )}
+        {currentStep === 'photoType' && (
+          <PhotoTypeSelector onSelectType={handlePhotoTypeSelect} />
+        )}
 
-          {currentStep === 'upload' && (
-            <Card className="bg-slate-800/40 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-2xl border border-purple-500/20">
-              <div className="text-center mb-4 sm:mb-6 md:mb-8">
-                <div className="flex flex-col sm:flex-row items-center justify-between mb-3 sm:mb-4 gap-3 sm:gap-4">
-                  <Button
-                    onClick={goBack}
-                    className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto text-sm px-3 py-2"
-                  >
-                    <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
-                    Voltar
-                  </Button>
-                  <div className="text-center flex-1">
-                    <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-white text-center">
-                      Upload de Imagens
-                    </h2>
-                    {selectedPhotoType && (
-                      <div className="text-xs sm:text-sm text-purple-300 bg-purple-500/20 rounded-lg px-2 sm:px-3 py-1 inline-block mt-2">
-                        {selectedPhotoType.name} ({selectedPhotoType.dimensions})
-                      </div>
-                    )}
-                  </div>
-                  <div className="hidden sm:block w-[80px] md:w-[100px]"></div>
+        {currentStep === 'upload' && (
+          <Card className="bg-slate-800/40 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-2xl border border-purple-500/20">
+            <div className="text-center mb-4 sm:mb-6 md:mb-8">
+              <div className="flex flex-col sm:flex-row items-center justify-between mb-3 sm:mb-4 gap-3 sm:gap-4">
+                <Button
+                  onClick={goBack}
+                  className="flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto text-sm px-3 py-2"
+                >
+                  <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+                  Voltar
+                </Button>
+                <div className="text-center flex-1">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-white text-center">
+                    Upload de Imagens
+                  </h2>
+                  {selectedPhotoType && (
+                    <div className="text-xs sm:text-sm text-purple-300 bg-purple-500/20 rounded-lg px-2 sm:px-3 py-1 inline-block mt-2">
+                      {selectedPhotoType.name} ({selectedPhotoType.dimensions})
+                    </div>
+                  )}
                 </div>
-                <p className="text-gray-300 mb-3 sm:mb-4 md:mb-6 text-xs sm:text-sm md:text-base px-2">
-                  Selecione múltiplas imagens para criar fotos {selectedPhotoType?.dimensions || ''}.
-                </p>
+                <div className="hidden sm:block w-[80px] md:w-[100px]"></div>
+              </div>
+              <p className="text-gray-300 mb-3 sm:mb-4 md:mb-6 text-xs sm:text-sm md:text-base px-2">
+                Selecione múltiplas imagens para criar fotos {selectedPhotoType?.dimensions || ''}.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center gap-4 sm:gap-6">
+              {/* Drag and Drop Zone */}
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`w-full border-2 border-dashed rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 transition-all duration-300 cursor-pointer ${
+                  isDragOver 
+                    ? 'border-purple-400 bg-purple-500/20 scale-105' 
+                    : 'border-purple-500/50 bg-slate-700/30 hover:border-purple-400 hover:bg-purple-500/10'
+                }`}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <div className="text-center">
+                  <div className="bg-gradient-to-r from-purple-500 to-blue-600 rounded-full p-3 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 flex items-center justify-center">
+                    <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+                  </div>
+                  <h3 className="text-base sm:text-lg font-semibold text-white mb-2">
+                    {isDragOver ? 'Solte suas imagens aqui!' : 'Arrastar e Soltar Imagens'}
+                  </h3>
+                  <p className="text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4">
+                    Arraste suas imagens aqui ou clique para selecionar
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Suporta: JPG, PNG, GIF, WEBP
+                  </p>
+                </div>
               </div>
 
-              <div className="flex flex-col items-center gap-4 sm:gap-6">
-                {/* Drag and Drop Zone */}
-                <div
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                  className={`w-full border-2 border-dashed rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 transition-all duration-300 cursor-pointer ${
-                    isDragOver 
-                      ? 'border-purple-400 bg-purple-500/20 scale-105' 
-                      : 'border-purple-500/50 bg-slate-700/30 hover:border-purple-400 hover:bg-purple-500/10'
-                  }`}
+              {/* Alternative buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+                <Button
                   onClick={() => fileInputRef.current?.click()}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
                 >
-                  <div className="text-center">
-                    <div className="bg-gradient-to-r from-purple-500 to-blue-600 rounded-full p-3 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 flex items-center justify-center">
-                      <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-                    </div>
-                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2">
-                      {isDragOver ? 'Solte suas imagens aqui!' : 'Arrastar e Soltar Imagens'}
-                    </h3>
-                    <p className="text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4">
-                      Arraste suas imagens aqui ou clique para selecionar
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      Suporta: JPG, PNG, GIF, WEBP
-                    </p>
-                  </div>
-                </div>
+                  <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                  Selecionar Arquivos
+                </Button>
 
-                {/* Alternative buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
-                  <Button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
-                  >
-                    <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                    Selecionar Arquivos
-                  </Button>
-
-                  <Button
-                    onClick={handlePasteImage}
-                    className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
-                  >
-                    <Clipboard className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                    Colar Imagem
-                  </Button>
-                </div>
-
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => {
-                    if (e.target.files) handleFileSelect(e.target.files);
-                  }}
-                  className="hidden"
-                />
-
-                {images.length > 0 && (
-                  <div className="w-full space-y-3 sm:space-y-4">
-                    <h3 className="text-base sm:text-lg font-medium text-white text-center">
-                      Imagens Anexadas ({images.length})
-                    </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                      {images.map((image, index) => (
-                        <div key={image.id} className="bg-slate-700/50 rounded-lg sm:rounded-xl p-2 sm:p-3 relative">
-                          <img
-                            src={image.url}
-                            alt={`Imagem ${index + 1}`}
-                            className="w-full h-20 sm:h-24 object-cover rounded-md sm:rounded-lg mb-2"
-                          />
-                          <p className="text-xs text-gray-300 text-center mb-2">
-                            Imagem {index + 1}
-                          </p>
-                          <Button
-                            onClick={() => removeImage(image.id)}
-                            size="sm"
-                            className="w-full bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1"
-                          >
-                            <Trash2 className="h-3 w-3 mr-1" />
-                            Remover
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    <div className="flex justify-center">
-                      <Button
-                        onClick={proceedToEdit}
-                        className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105"
-                      >
-                        <Edit3 className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                        Editar Imagens
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </Card>
-          )}
-
-          {currentStep === 'multiEditor' && selectedPhotoType && (
-            <MultiImageEditor
-              images={images}
-              photoType={selectedPhotoType}
-              onImageAdjusted={handleImageAdjusted}
-              onBack={goBack}
-              onContinue={proceedToBackgroundRemoval}
-            />
-          )}
-
-          {currentStep === 'backgroundRemoval' && (
-            <BackgroundRemovalStep
-              images={images}
-              onProcessedImageUpload={handleProcessedImageUpload}
-              onBack={goBack}
-              onContinue={proceedToQuantity}
-            />
-          )}
-
-          {currentStep === 'quantity' && selectedPhotoType && (
-            <QuantitySelector
-              images={images}
-              photoType={selectedPhotoType}
-              onQuantityUpdate={handleQuantityUpdate}
-              onBack={goBack}
-              onGeneratePDF={generateDocument}
-              isProcessing={isProcessing}
-            />
-          )}
-
-          {currentStep === 'final' && pdfBlob && (
-            <Card className="bg-slate-800/40 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl border border-purple-500/20 text-center">
-              <div className="mb-4 sm:mb-6 md:mb-8">
-                <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-full p-3 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 flex items-center justify-center shadow-xl">
-                  <Download className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-                </div>
-                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-white mb-2">
-                  PDF Pronto!
-                </h2>
-                <p className="text-gray-300 text-xs sm:text-sm md:text-base px-2">
-                  {images.reduce((sum, img) => sum + img.quantity, 0)} {selectedPhotoType?.name || 'fotos'} ({selectedPhotoType?.dimensions || ''}) com contornos pretos para fácil recorte
-                </p>
-              </div>
-
-              <div className="flex justify-center">
                 <Button
-                  onClick={downloadPDF}
-                  className="neon-button w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105"
+                  onClick={handlePasteImage}
+                  className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
                 >
-                  <Download className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-2" />
-                  Baixar PDF
+                  <Clipboard className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                  Colar Imagem
                 </Button>
               </div>
-            </Card>
-          )}
 
-          {/* Nova tela de agradecimento */}
-          {currentStep === 'thanks' && (
-            <Card className="bg-slate-800/40 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl border border-purple-500/20 text-center">
-              <div className="mb-4 sm:mb-6 md:mb-8">
-                <div className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-3 sm:p-4 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto mb-4 sm:mb-6 flex items-center justify-center shadow-xl">
-                  <Heart className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 text-white" />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => {
+                  if (e.target.files) handleFileSelect(e.target.files);
+                }}
+                className="hidden"
+              />
+
+              {images.length > 0 && (
+                <div className="w-full space-y-3 sm:space-y-4">
+                  <h3 className="text-base sm:text-lg font-medium text-white text-center">
+                    Imagens Anexadas ({images.length})
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                    {images.map((image, index) => (
+                      <div key={image.id} className="bg-slate-700/50 rounded-lg sm:rounded-xl p-2 sm:p-3 relative">
+                        <img
+                          src={image.url}
+                          alt={`Imagem ${index + 1}`}
+                          className="w-full h-20 sm:h-24 object-cover rounded-md sm:rounded-lg mb-2"
+                        />
+                        <p className="text-xs text-gray-300 text-center mb-2">
+                          Imagem {index + 1}
+                        </p>
+                        <Button
+                          onClick={() => removeImage(image.id)}
+                          size="sm"
+                          className="w-full bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1"
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          Remover
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="flex justify-center">
+                    <Button
+                      onClick={proceedToEdit}
+                      className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105"
+                    >
+                      <Edit3 className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                      Editar Imagens
+                    </Button>
+                  </div>
                 </div>
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3 sm:mb-4 px-2">
-                  Obrigado por usar o PhotoSpace!
-                </h2>
-                <p className="text-gray-300 text-sm sm:text-base md:text-lg mb-2 px-2">
-                  Seu PDF foi gerado com sucesso! 🎉
-                </p>
-                <p className="text-xs sm:text-sm text-purple-300">
-                  Esperamos que suas fotos fiquem perfeitas!
-                </p>
-              </div>
+              )}
+            </div>
+          </Card>
+        )}
 
-              <div className="space-y-3 sm:space-y-4">
-                <Button
-                  onClick={resetApp}
-                  className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg sm:rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105"
-                >
-                  Criar Outro PDF
-                </Button>
-                
-                <div className="text-xs text-gray-400 mt-4 sm:mt-6">
-                  Criado com ❤️ por Bazar do Izaias
-                </div>
-              </div>
-            </Card>
-          )}
-        </div>
-      </div>
+        {currentStep === 'multiEditor' && selectedPhotoType && (
+          <MultiImageEditor
+            images={images}
+            photoType={selectedPhotoType}
+            onImageAdjusted={handleImageAdjusted}
+            onBack={goBack}
+            onContinue={proceedToBackgroundRemoval}
+          />
+        )}
 
-      {/* Responsive Fixed Footer with Adsterra Banner */}
-      <div className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-sm border-t border-slate-700/30 z-50 pointer-events-none">
-        <div className="flex justify-center items-center py-1 sm:py-2 px-2 sm:px-4 pointer-events-auto">
-          <div className="text-center w-full max-w-screen-xl mx-auto">
-            <script async data-cfasync="false" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
-            <div 
-              id="container-2bef587e1910539b0471f8cc71d76425" 
-              className="
-                scale-[0.3] sm:scale-[0.4] md:scale-[0.5] lg:scale-[0.6] xl:scale-75
-                transform origin-center
-                max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[600px]
-                mx-auto
-                overflow-hidden
-              "
-            ></div>
+        {currentStep === 'backgroundRemoval' && (
+          <BackgroundRemovalStep
+            images={images}
+            onProcessedImageUpload={handleProcessedImageUpload}
+            onBack={goBack}
+            onContinue={proceedToQuantity}
+          />
+        )}
+
+        {currentStep === 'quantity' && selectedPhotoType && (
+          <QuantitySelector
+            images={images}
+            photoType={selectedPhotoType}
+            onQuantityUpdate={handleQuantityUpdate}
+            onBack={goBack}
+            onGeneratePDF={generateDocument}
+            isProcessing={isProcessing}
+          />
+        )}
+
+        {currentStep === 'final' && pdfBlob && (
+          <Card className="bg-slate-800/40 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl border border-purple-500/20 text-center">
+            <div className="mb-4 sm:mb-6 md:mb-8">
+              <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-full p-3 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 flex items-center justify-center shadow-xl">
+                <Download className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+              </div>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-white mb-2">
+                PDF Pronto!
+              </h2>
+              <p className="text-gray-300 text-xs sm:text-sm md:text-base px-2">
+                {images.reduce((sum, img) => sum + img.quantity, 0)} {selectedPhotoType?.name || 'fotos'} ({selectedPhotoType?.dimensions || ''}) com contornos pretos para fácil recorte
+              </p>
+            </div>
+
+            <div className="flex justify-center">
+              <Button
+                onClick={downloadPDF}
+                className="neon-button w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                <Download className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-2" />
+                Baixar PDF
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {/* Nova tela de agradecimento */}
+        {currentStep === 'thanks' && (
+          <Card className="bg-slate-800/40 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl border border-purple-500/20 text-center">
+            <div className="mb-4 sm:mb-6 md:mb-8">
+              <div className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-3 sm:p-4 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto mb-4 sm:mb-6 flex items-center justify-center shadow-xl">
+                <Heart className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 text-white" />
+              </div>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3 sm:mb-4 px-2">
+                Obrigado por usar o PhotoSpace!
+              </h2>
+              <p className="text-gray-300 text-sm sm:text-base md:text-lg mb-2 px-2">
+                Seu PDF foi gerado com sucesso! 🎉
+              </p>
+              <p className="text-xs sm:text-sm text-purple-300">
+                Esperamos que suas fotos fiquem perfeitas!
+              </p>
+            </div>
+
+            <div className="space-y-3 sm:space-y-4">
+              <Button
+                onClick={resetApp}
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg sm:rounded-xl text-base sm:text-lg font-medium shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                Criar Outro PDF
+              </Button>
+              
+              <div className="text-xs text-gray-400 mt-4 sm:mt-6">
+                Criado com ❤️ por Bazar do Izaias
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Adsterra Banner - Now integrated in the normal flow */}
+        <div className="mt-8 sm:mt-12 mb-6 sm:mb-8">
+          <div className="flex justify-center items-center py-4 sm:py-6">
+            <div className="text-center w-full max-w-screen-lg mx-auto">
+              <script async data-cfasync="false" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
+              <div 
+                id="container-2bef587e1910539b0471f8cc71d76425" 
+                className="
+                  scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-90 xl:scale-100
+                  transform origin-center
+                  max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] xl:max-w-[728px]
+                  mx-auto
+                  overflow-hidden
+                "
+              ></div>
+            </div>
           </div>
         </div>
       </div>
