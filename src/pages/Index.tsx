@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, CircleDollarSign, Play, Pause, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -356,7 +357,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-x-hidden pb-4 md:pb-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-x-hidden pb-16 sm:pb-20 md:pb-24">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-r from-purple-800/20 to-blue-800/20"></div>
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-600/10 via-transparent to-transparent"></div>
@@ -691,12 +692,21 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Fixed Footer with Adsterra Banner - Minimal clickable area */}
-      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 bg-slate-900/80 backdrop-blur-sm border border-slate-700/20 rounded-t-lg z-50 pointer-events-none" style={{height: '16px', width: 'auto', maxWidth: '200px'}}>
-        <div className="flex justify-center items-center h-full px-1 pointer-events-auto">
-          <div className="text-center" style={{fontSize: '6px', lineHeight: '1'}}>
+      {/* Responsive Fixed Footer with Adsterra Banner */}
+      <div className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-sm border-t border-slate-700/30 z-50 pointer-events-none">
+        <div className="flex justify-center items-center py-1 sm:py-2 px-2 sm:px-4 pointer-events-auto">
+          <div className="text-center w-full max-w-screen-xl mx-auto">
             <script async data-cfasync="false" src="//craptroopstammer.com/2bef587e1910539b0471f8cc71d76425/invoke.js"></script>
-            <div id="container-2bef587e1910539b0471f8cc71d76425" style={{transform: 'scale(0.4)', transformOrigin: 'center'}}></div>
+            <div 
+              id="container-2bef587e1910539b0471f8cc71d76425" 
+              className="
+                scale-[0.3] sm:scale-[0.4] md:scale-[0.5] lg:scale-[0.6] xl:scale-75
+                transform origin-center
+                max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[600px]
+                mx-auto
+                overflow-hidden
+              "
+            ></div>
           </div>
         </div>
       </div>
