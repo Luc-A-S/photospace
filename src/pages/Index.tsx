@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, Heart, Play, Pause } from 'lucide-react';
+import { Upload, Download, Loader2, ExternalLink, ArrowLeft, Clipboard, Edit3, Trash2, CircleDollarSign, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -458,7 +458,7 @@ const Index = () => {
               onClick={handleSupportClick}
               className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium shadow-lg transition-all duration-300 hover:scale-105 border-0"
             >
-              <Heart className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+              <CircleDollarSign className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
               Apoie
             </Button>
           </div>
